@@ -149,6 +149,9 @@ const GFORM_URL = `https://docs.google.com/forms/d/e/${GFORM_ID}/viewform`;
 const ENTRY_EMAIL = "entry.621316823";
 const ENTRY_ASN = "entry.1661701622";
 const MAX_PREFIX_CHECK = 20; // échantillon RPKI
+// Analyses loguées dans le MEME Google Form via cet email marqueur,
+// pour les distinguer des inscriptions liste d'attente.
+const ANALYTICS_EMAIL = "analyse@sentinelle-routage.invalid";
 
 const $ = id => document.getElementById(id);
 const api = path => fetch("https://stat.ripe.net/data/" + path).then(r => r.json());
@@ -156,6 +159,15 @@ const api = path => fetch("https://stat.ripe.net/data/" + path).then(r => r.json
 function parseASN(v){
   const m = (v||"").trim().toUpperCase().replace(/^AS/,"").match(/^\d{1,10}$/);
   return m ? m[0] : null;
+}
+
+function logAnalysis(asn){
+  try{
+    const fd = new FormData();
+    fd.append(ENTRY_EMAIL, ANALYTICS_EMAIL);
+    fd.append(ENTRY_ASN, "AS" + asn);
+    fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  }catch(e){}
 }
 
 async function runCheck(){
@@ -170,6 +182,7 @@ async function runCheck(){
       api(`routing-status/data.json?resource=AS${asn}`)
     ]);
     const holder = ov?.data?.holder || "(inconnu)";
+    logAnalysis(asn);
     const d = rs?.data || {};
     const v4 = d.announced_space?.v4?.prefixes || 0;
     const v6 = d.announced_space?.v6?.prefixes || 0;
