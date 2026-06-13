@@ -149,9 +149,12 @@ const GFORM_URL = `https://docs.google.com/forms/d/e/${GFORM_ID}/viewform`;
 const ENTRY_EMAIL = "entry.621316823";
 const ENTRY_ASN = "entry.1661701622";
 const MAX_PREFIX_CHECK = 20; // échantillon RPKI
-// Analyses loguées dans le MEME Google Form via cet email marqueur,
-// pour les distinguer des inscriptions liste d'attente.
+// Sentinelle d'analytics : les analyses sont loguées dans le MÊME Google Form
+// avec cet email marqueur, pour les distinguer des vraies inscriptions liste d'attente.
 const ANALYTICS_EMAIL = "analyse@sentinelle-routage.invalid";
+// Marqueur "visite" : une ligne par session de navigation, pour mesurer
+// combien de personnes arrivent sur la page (et quel taux lance une analyse).
+const VISIT_EMAIL = "visite@sentinelle-routage.invalid";
 
 const $ = id => document.getElementById(id);
 const api = path => fetch("https://stat.ripe.net/data/" + path).then(r => r.json());
@@ -161,13 +164,15 @@ function parseASN(v){
   return m ? m[0] : null;
 }
 
+// Logue une analyse (ASN) dans le Google Form, marquée par ANALYTICS_EMAIL.
+// Sans cookie, sans tiers : c'est ton propre formulaire. Erreurs silencieuses.
 function logAnalysis(asn){
   try{
     const fd = new FormData();
     fd.append(ENTRY_EMAIL, ANALYTICS_EMAIL);
     fd.append(ENTRY_ASN, "AS" + asn);
     fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
-  }catch(e){}
+  }catch(e){ /* no-op */ }
 }
 
 async function runCheck(){
@@ -182,7 +187,7 @@ async function runCheck(){
       api(`routing-status/data.json?resource=AS${asn}`)
     ]);
     const holder = ov?.data?.holder || "(inconnu)";
-    logAnalysis(asn);
+    logAnalysis(asn); // journalise l'analyse de cet ASN
     const d = rs?.data || {};
     const v4 = d.announced_space?.v4?.prefixes || 0;
     const v6 = d.announced_space?.v6?.prefixes || 0;
@@ -275,6 +280,21 @@ function submitWL(ev){
     .finally(()=>{ $("wl").style.display="none"; $("okmsg").style.display="block"; });
   return false;
 }
+
+// Logue une "visite" une seule fois par session de navigation (même tuyau que
+// logAnalysis : ton propre Google Form, sans cookie ni tiers). Permet de compter
+// les arrivées sur la page et d'en déduire le taux de conversion vers l'analyse.
+function logVisit(){
+  try{
+    if(sessionStorage.getItem("sr_visit")) return;
+    sessionStorage.setItem("sr_visit","1");
+    const fd = new FormData();
+    fd.append(ENTRY_EMAIL, VISIT_EMAIL);
+    fd.append(ENTRY_ASN, "");
+    fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  }catch(e){ /* no-op */ }
+}
+logVisit();
 </script>
 </body>
 </html>
