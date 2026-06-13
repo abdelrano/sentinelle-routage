@@ -153,7 +153,7 @@ const MAX_PREFIX_CHECK = 20; // échantillon RPKI (gratuit). Le payant teste TOU
 // Quand le Worker Cloudflare (proxy + cache anti rate-limit) est déployé, remplacer par :
 //   "https://<nom-du-worker>.<sous-domaine>.workers.dev/data/"
 // Voir deliverables/business/sentinelle-routage/cloudflare-worker.js + DEPLOIEMENT-WORKER.md
-const RIPE_BASE = "https://stat.ripe.net/data/";
+const RIPE_BASE = "https://sentinelle-proxy.netrconsulting.workers.dev/data/";
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 h : durée de validité du résultat mis en cache par ASN
 const API_RETRIES = 3;              // nb de tentatives avant d'abandonner (résilience rate-limit)
 // Sentinelle d'analytics : les analyses sont loguées dans le MÊME Google Form
