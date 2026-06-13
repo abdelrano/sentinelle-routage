@@ -105,9 +105,9 @@
     <p class="lead">Self-serve, sans engagement, sans appel commercial. Lancement prévu T3 2026.</p>
     <div class="grid3">
       <div class="card"><span class="tag">Gratuit</span><div class="price">0 €</div>
-        <ul><li>Check manuel illimité de votre ASN</li><li>Score de santé routage</li><li>1 alerte email hebdomadaire</li></ul></div>
+        <ul><li>Check manuel illimité de votre ASN</li><li>Score de santé routage</li><li>Validation RPKI sur un <b>échantillon</b> de préfixes</li><li>Photo ponctuelle (pas de surveillance)</li></ul></div>
       <div class="card hl"><span class="tag">Standard</span><div class="price">39 € <small>/ mois</small></div>
-        <ul><li>1 ASN surveillé 24/7</li><li>Alertes temps réel (email, Slack, webhook)</li><li>Historique 12 mois</li><li>Hygiène RPKI continue</li></ul></div>
+        <ul><li><b>Test complet : tous vos préfixes</b>, pas un échantillon</li><li>1 ASN surveillé 24/7</li><li>Alertes temps réel (email, Slack, webhook)</li><li>Historique 12 mois</li><li>Hygiène RPKI continue</li></ul></div>
       <div class="card"><span class="tag">Pro / MSP</span><div class="price">149 € <small>/ mois</small></div>
         <ul><li>Jusqu'à 10 ASN</li><li>Rapports d'audit NIS2 / MANRS mensuels (PDF)</li><li>API</li><li>Support prioritaire par un ingénieur réseau</li></ul></div>
     </div>
@@ -148,7 +148,14 @@ const GFORM_ACTION = `https://docs.google.com/forms/d/e/${GFORM_ID}/formResponse
 const GFORM_URL = `https://docs.google.com/forms/d/e/${GFORM_ID}/viewform`;
 const ENTRY_EMAIL = "entry.621316823";
 const ENTRY_ASN = "entry.1661701622";
-const MAX_PREFIX_CHECK = 20; // échantillon RPKI
+const MAX_PREFIX_CHECK = 20; // échantillon RPKI (gratuit). Le payant teste TOUS les préfixes.
+// Source de données. Par défaut : RIPEstat en direct.
+// Quand le Worker Cloudflare (proxy + cache anti rate-limit) est déployé, remplacer par :
+//   "https://<nom-du-worker>.<sous-domaine>.workers.dev/data/"
+// Voir deliverables/business/sentinelle-routage/cloudflare-worker.js + DEPLOIEMENT-WORKER.md
+const RIPE_BASE = "https://stat.ripe.net/data/";
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 h : durée de validité du résultat mis en cache par ASN
+const API_RETRIES = 3;              // nb de tentatives avant d'abandonner (résilience rate-limit)
 // Sentinelle d'analytics : les analyses sont loguées dans le MÊME Google Form
 // avec cet email marqueur, pour les distinguer des vraies inscriptions liste d'attente.
 const ANALYTICS_EMAIL = "analyse@sentinelle-routage.invalid";
@@ -159,7 +166,42 @@ const VISIT_EMAIL = "visite@sentinelle-routage.invalid";
 const PAY_EMAIL = "paiement@sentinelle-routage.invalid";
 
 const $ = id => document.getElementById(id);
-const api = path => fetch("https://stat.ripe.net/data/" + path).then(r => r.json());
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// Appel RIPEstat résilient : retente avec backoff exponentiel + jitter sur
+// rate-limit (429) ou erreur serveur (5xx) ou panne réseau. C'est ce qui évite
+// d'afficher une erreur au visiteur quand RIPEstat nous bride pendant un pic.
+async function api(path, attempt = 0){
+  try{
+    const r = await fetch(RIPE_BASE + path);
+    if(r.status === 429 || r.status >= 500) throw new Error("HTTP " + r.status);
+    return await r.json();
+  }catch(e){
+    if(attempt < API_RETRIES){
+      await sleep(400 * Math.pow(2, attempt) + Math.random() * 250);
+      return api(path, attempt + 1);
+    }
+    throw e;
+  }
+}
+
+// ---- Cache résultat par ASN (localStorage) ----
+// Une analyse déjà faite récemment est resservie instantanément, sans retaper
+// RIPEstat. Pendant un pic où beaucoup testent les mêmes gros ASN, ça coupe
+// l'essentiel de la charge.
+function cacheGet(asn){
+  try{
+    const raw = localStorage.getItem("sr_res_AS" + asn);
+    if(!raw) return null;
+    const obj = JSON.parse(raw);
+    if(Date.now() - obj.t > CACHE_TTL_MS) return null;
+    return obj;
+  }catch(e){ return null; }
+}
+function cacheSet(asn, model){
+  try{ localStorage.setItem("sr_res_AS" + asn, JSON.stringify({t: Date.now(), model})); }
+  catch(e){ /* quota ou mode privé : on ignore */ }
+}
 
 function parseASN(v){
   const m = (v||"").trim().toUpperCase().replace(/^AS/,"").match(/^\d{1,10}$/);
@@ -177,100 +219,155 @@ function logAnalysis(asn){
   }catch(e){ /* no-op */ }
 }
 
-async function runCheck(){
+// Point d'entrée : gère le cache, lance l'analyse, rend le résultat ou l'erreur.
+// force=true ignore le cache (bouton "rafraîchir").
+async function runCheck(force){
   const asn = parseASN($("asn").value);
   const prog = $("prog"), res = $("result"), btn = $("go");
   if(!asn){ alert("Entre un numéro d'AS valide, ex. AS3215"); return; }
   btn.disabled = true; res.style.display = "none"; res.innerHTML = "";
-  prog.style.display = "block"; prog.textContent = "Interrogation de RIPEstat…";
-  try{
-    const [ov, rs] = await Promise.all([
-      api(`as-overview/data.json?resource=AS${asn}`),
-      api(`routing-status/data.json?resource=AS${asn}`)
-    ]);
-    const holder = ov?.data?.holder || "(inconnu)";
-    logAnalysis(asn); // journalise l'analyse de cet ASN
-    const d = rs?.data || {};
-    const v4 = d.announced_space?.v4?.prefixes || 0;
-    const v6 = d.announced_space?.v6?.prefixes || 0;
-    const seen = d.visibility?.v4?.ris_peers_seeing || 0;
-    const total = d.visibility?.v4?.total_ris_peers || 1;
-    const neighbours = d.observed_neighbours || 0;
-    const visPct = Math.round(100*seen/total);
 
-    if(v4 + v6 === 0){
-      prog.style.display="none"; btn.disabled=false;
-      res.style.display="block";
-      res.innerHTML = `<div class="issue i-warn">AS${asn} (${holder}) n'annonce actuellement aucun préfixe visible par les collecteurs RIS. Vérifie le numéro d'AS.</div>`;
+  // Cache : si on a une analyse fraîche de cet ASN, on la ressert sans taper RIPEstat.
+  if(!force){
+    const hit = cacheGet(asn);
+    if(hit){
+      prog.style.display = "none"; btn.disabled = false; res.style.display = "block";
+      const ageMin = Math.max(1, Math.round((Date.now() - hit.t) / 60000));
+      renderResult(hit.model, ageMin);
       return;
     }
+  }
 
-    prog.textContent = "Récupération des préfixes annoncés…";
-    const ap = await api(`announced-prefixes/data.json?resource=AS${asn}`);
-    const prefixes = (ap?.data?.prefixes || []).map(p => p.prefix);
-    const sample = prefixes.slice(0, MAX_PREFIX_CHECK);
-
-    let valid=0, invalid=0, notfound=0; const problems=[];
-    for(let i=0;i<sample.length;i++){
-      prog.textContent = `Validation RPKI ${i+1}/${sample.length} (${sample[i]})…`;
-      try{
-        const rv = await api(`rpki-validation/data.json?resource=AS${asn}&prefix=${encodeURIComponent(sample[i])}`);
-        const st = rv?.data?.status;
-        if(st === "valid") valid++;
-        else if(st && st.startsWith("invalid")){ invalid++; problems.push({p:sample[i], st}); }
-        else { notfound++; problems.push({p:sample[i], st:"sans ROA"}); }
-      }catch(e){ notfound++; }
+  prog.style.display = "block"; prog.textContent = "Interrogation de RIPEstat…";
+  try{
+    const model = await analyze(asn, prog);
+    if(model.empty){
+      prog.style.display="none"; btn.disabled=false; res.style.display="block";
+      res.innerHTML = `<div class="issue i-warn">AS${asn} (${model.holder}) n'annonce actuellement aucun préfixe visible par les collecteurs RIS. Vérifie le numéro d'AS.</div>`;
+      return;
     }
-    const checked = valid+invalid+notfound;
-    const covPct = checked ? Math.round(100*valid/checked) : 0;
-
-    // Score
-    let score = 0;
-    score += covPct * 0.6;                       // 60 pts : couverture RPKI valide
-    score += (invalid===0 ? 25 : Math.max(0, 25 - invalid*10)); // 25 pts : aucun invalide
-    score += Math.min(15, visPct * 0.15);        // 15 pts : visibilité
-    score = Math.round(score);
-    const grade = score>=90?"A":score>=75?"B":score>=55?"C":score>=35?"D":"E";
-    const gradeMsg = {
-      A:"Excellente hygiène de routage. Le défi : que ça reste vrai à 3 h du matin.",
-      B:"Bonne base. Quelques angles morts à corriger pour viser la conformité MANRS.",
-      C:"Hygiène moyenne : des préfixes sans ROA ou des incohérences à traiter.",
-      D:"Exposition réelle aux hijacks et aux rejets RPKI. À corriger rapidement.",
-      E:"Routage à risque : vos préfixes peuvent être détournés ou filtrés sans que vous le sachiez."
-    }[grade];
-
-    let issuesHtml = "";
-    if(invalid>0) issuesHtml += `<div class="issue i-bad">🔴 <b>${invalid} préfixe(s) RPKI INVALID</b> sur l'échantillon : ces routes peuvent être rejetées par les opérateurs qui valident (et c'est la signature classique d'un souci de ROA). ${problems.filter(x=>x.st!=="sans ROA").slice(0,5).map(x=>`<code>${x.p}</code> (${x.st})`).join(", ")}</div>`;
-    if(notfound>0) issuesHtml += `<div class="issue i-warn">🟠 <b>${notfound} préfixe(s) sans ROA</b> : non protégés contre le hijack d'origine. Ex. : ${problems.filter(x=>x.st==="sans ROA").slice(0,5).map(x=>`<code>${x.p}</code>`).join(", ")}</div>`;
-    if(visPct<90) issuesHtml += `<div class="issue i-warn">🟠 Visibilité partielle : ${visPct} % des collecteurs RIS voient vos annonces.</div>`;
-    if(!issuesHtml) issuesHtml = `<div class="issue i-ok">🟢 Aucun problème détecté sur l'échantillon analysé. Beau travail.</div>`;
-
+    logAnalysis(asn);       // journalise l'analyse de cet ASN
+    cacheSet(asn, model);   // mémorise pour les prochains visiteurs (anti rate-limit)
     prog.style.display="none"; btn.disabled=false; res.style.display="block";
-    res.innerHTML = `
-      <div class="scorecard">
-        <div class="grade g-${grade}">${grade}</div>
-        <div>
-          <b>AS${asn} — ${holder}</b><br>
-          <span style="color:var(--muted);font-size:.92rem">${gradeMsg}</span>
-        </div>
-      </div>
-      <div class="kpis">
-        <div class="kpi"><b>${v4 + v6}</b><span>préfixes annoncés (v4+v6)</span></div>
-        <div class="kpi"><b>${covPct} %</b><span>RPKI valide (échantillon de ${checked})</span></div>
-        <div class="kpi"><b>${invalid}</b><span>préfixes INVALID</span></div>
-        <div class="kpi"><b>${visPct} %</b><span>visibilité RIS</span></div>
-        <div class="kpi"><b>${neighbours}</b><span>voisins BGP observés</span></div>
-      </div>
-      <div class="issues">${issuesHtml}</div>
-      <div class="cta-box" id="ctaBox">
-        <p><b>Cette photo date d'aujourd'hui.</b> Un ROA expire, un préfixe fuit, un hijack arrive : qui vous prévient ? Sentinelle Routage surveille AS${asn} en continu et produit le rapport mensuel pour vos audits.</p>
-        <button onclick="payIntent('${asn}')">💶 Je paierais pour surveiller AS${asn} en continu (39 €/mois)</button>
-        <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Juste me tenir informé</button>
-      </div>`;
+    renderResult(model, 0);
   }catch(e){
     prog.style.display="none"; btn.disabled=false; res.style.display="block";
-    res.innerHTML = `<div class="issue i-warn">RIPEstat ne répond pas pour cette ressource. Réessaie dans une minute.</div>`;
+    res.innerHTML = `<div class="issue i-warn">
+      ⏳ RIPEstat est momentanément surchargé et n'a pas répondu après plusieurs tentatives. Ce n'est pas un problème de votre côté.
+      <div style="margin-top:10px"><button onclick="runCheck(true)">Réessayer</button></div>
+    </div>`;
   }
+}
+
+// Interroge RIPEstat et calcule le modèle de résultat (sans aucun rendu DOM).
+async function analyze(asn, prog){
+  const [ov, rs] = await Promise.all([
+    api(`as-overview/data.json?resource=AS${asn}`),
+    api(`routing-status/data.json?resource=AS${asn}`)
+  ]);
+  const holder = ov?.data?.holder || "(inconnu)";
+  const d = rs?.data || {};
+  const v4 = d.announced_space?.v4?.prefixes || 0;
+  const v6 = d.announced_space?.v6?.prefixes || 0;
+  const seen = d.visibility?.v4?.ris_peers_seeing || 0;
+  const total = d.visibility?.v4?.total_ris_peers || 1;
+  const neighbours = d.observed_neighbours || 0;
+  const visPct = Math.round(100*seen/total);
+  const totalPrefixes = v4 + v6;
+
+  if(totalPrefixes === 0) return {empty:true, holder};
+
+  if(prog) prog.textContent = "Récupération des préfixes annoncés…";
+  const ap = await api(`announced-prefixes/data.json?resource=AS${asn}`);
+  const prefixes = (ap?.data?.prefixes || []).map(p => p.prefix);
+  const sample = prefixes.slice(0, MAX_PREFIX_CHECK);
+
+  let valid=0, invalid=0, notfound=0; const problems=[];
+  for(let i=0;i<sample.length;i++){
+    if(prog) prog.textContent = `Validation RPKI ${i+1}/${sample.length} (${sample[i]})…`;
+    try{
+      const rv = await api(`rpki-validation/data.json?resource=AS${asn}&prefix=${encodeURIComponent(sample[i])}`);
+      const st = rv?.data?.status;
+      if(st === "valid") valid++;
+      else if(st && st.startsWith("invalid")){ invalid++; problems.push({p:sample[i], st}); }
+      else { notfound++; problems.push({p:sample[i], st:"sans ROA"}); }
+    }catch(e){ notfound++; }
+  }
+  const checked = valid+invalid+notfound;
+  const covPct = checked ? Math.round(100*valid/checked) : 0;
+
+  let score = 0;
+  score += covPct * 0.6;                                        // 60 pts : couverture RPKI valide
+  score += (invalid===0 ? 25 : Math.max(0, 25 - invalid*10));  // 25 pts : aucun invalide
+  score += Math.min(15, visPct * 0.15);                        // 15 pts : visibilité
+  score = Math.round(score);
+  const grade = score>=90?"A":score>=75?"B":score>=55?"C":score>=35?"D":"E";
+
+  return {
+    asn, holder, v4, v6, totalPrefixes, visPct, neighbours,
+    covPct, checked, invalid, notfound, problems, score, grade,
+    sampled: totalPrefixes > sample.length // a-t-on testé seulement un échantillon ?
+  };
+}
+
+// Construit l'affichage à partir du modèle. ageMin>0 = résultat servi du cache.
+function renderResult(m, ageMin){
+  const res = $("result");
+  const gradeMsg = {
+    A:"Excellente hygiène de routage. Le défi : que ça reste vrai à 3 h du matin.",
+    B:"Bonne base. Quelques angles morts à corriger pour viser la conformité MANRS.",
+    C:"Hygiène moyenne : des préfixes sans ROA ou des incohérences à traiter.",
+    D:"Exposition réelle aux hijacks et aux rejets RPKI. À corriger rapidement.",
+    E:"Routage à risque : vos préfixes peuvent être détournés ou filtrés sans que vous le sachiez."
+  }[m.grade];
+
+  let issuesHtml = "";
+  if(m.invalid>0) issuesHtml += `<div class="issue i-bad">🔴 <b>${m.invalid} préfixe(s) RPKI INVALID</b> sur l'échantillon : ces routes peuvent être rejetées par les opérateurs qui valident (et c'est la signature classique d'un souci de ROA). ${m.problems.filter(x=>x.st!=="sans ROA").slice(0,5).map(x=>`<code>${x.p}</code> (${x.st})`).join(", ")}</div>`;
+  if(m.notfound>0) issuesHtml += `<div class="issue i-warn">🟠 <b>${m.notfound} préfixe(s) sans ROA</b> : non protégés contre le hijack d'origine. Ex. : ${m.problems.filter(x=>x.st==="sans ROA").slice(0,5).map(x=>`<code>${x.p}</code>`).join(", ")}</div>`;
+  if(m.visPct<90){
+    issuesHtml += `<div class="issue i-warn">🟠 Visibilité partielle : ${m.visPct} % des collecteurs RIS voient vos annonces.
+      <div style="margin-top:6px;font-size:.85rem;color:var(--muted)">ℹ️ Une visibilité partielle n'est pas toujours un défaut : anycast, réseau régional ou préfixes volontairement peu propagés peuvent l'expliquer. À interpréter selon votre topologie avant d'en faire un point d'audit.</div>
+    </div>`;
+  }
+  if(!issuesHtml) issuesHtml = `<div class="issue i-ok">🟢 Aucun problème détecté sur l'échantillon analysé. Beau travail.</div>`;
+
+  const cachedNote = ageMin>0
+    ? `<div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">⚡ Résultat mis en cache (il y a ${ageMin} min). <a href="#" onclick="runCheck(true);return false;" style="color:var(--acc)">Rafraîchir</a></div>`
+    : "";
+
+  // P2 : dire explicitement ce qui est gratuit (échantillon) vs payant (test complet).
+  const sampleNote = m.sampled
+    ? `<div class="issue i-warn" style="background:rgba(124,92,255,.06);border-color:rgba(124,92,255,.35)">🔎 Test gratuit réalisé sur un <b>échantillon de ${m.checked} préfixe(s)</b> sur ${m.totalPrefixes} annoncés. La surveillance payante teste <b>la totalité de vos préfixes</b>, en continu.</div>`
+    : "";
+
+  res.innerHTML = `
+    ${cachedNote}
+    <div class="scorecard">
+      <div class="grade g-${m.grade}">${m.grade}</div>
+      <div>
+        <b>AS${m.asn} — ${m.holder}</b><br>
+        <span style="color:var(--muted);font-size:.92rem">${gradeMsg}</span>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b>${m.totalPrefixes}</b><span>préfixes annoncés (v4+v6)</span></div>
+      <div class="kpi"><b>${m.covPct} %</b><span>RPKI valide (échantillon de ${m.checked})</span></div>
+      <div class="kpi"><b>${m.invalid}</b><span>préfixes INVALID</span></div>
+      <div class="kpi"><b>${m.visPct} %</b><span>visibilité RIS</span></div>
+      <div class="kpi"><b>${m.neighbours}</b><span>voisins BGP observés</span></div>
+    </div>
+    <div class="issues">${sampleNote}${issuesHtml}</div>
+    <div class="cta-box" id="ctaBox">
+      <p><b>Cette photo date d'aujourd'hui — et ne couvre qu'un échantillon.</b> Voici ce que débloque la surveillance payante :</p>
+      <ul style="margin:0 0 12px 18px;color:var(--muted);font-size:.92rem">
+        <li><b>Test complet</b> : tous vos préfixes validés, pas un échantillon de ${m.checked}.</li>
+        <li><b>Surveillance 24/7</b> : hijack, fuite de route, ROA qui expire, perte de visibilité.</li>
+        <li><b>Alertes</b> en minutes (email, Slack, webhook).</li>
+        <li><b>Rapport mensuel PDF</b> prêt pour vos audits NIS2 / MANRS.</li>
+      </ul>
+      <button onclick="payIntent('${m.asn}')">💶 Je paierais pour surveiller AS${m.asn} en continu (39 €/mois)</button>
+      <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${m.asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Juste me tenir informé</button>
+    </div>`;
 }
 
 function submitWL(ev){
