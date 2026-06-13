@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentinelle Routage — Santé BGP/RPKI de votre ASN en 30 secondes</title>
+<meta name="description" content="Vérifiez gratuitement la santé du routage de votre ASN : couverture RPKI, ROA invalides, visibilité BGP. Alertes 24/7 et rapports de conformité NIS2/MANRS bientôt disponibles.">
+<style>
+  :root{
+    --bg:#0b1220; --panel:#111a2e; --panel2:#0e1626; --line:#1f2c47;
+    --txt:#e8eefb; --muted:#93a4c3; --acc:#4f8cff; --acc2:#7c5cff;
+    --ok:#2dd4a7; --warn:#f5b14c; --bad:#f4607a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  header{padding:18px 0;border-bottom:1px solid var(--line)}
+  .brand{font-weight:700;font-size:1.15rem;letter-spacing:.3px}
+  .brand span{color:var(--acc)}
+  .hero{padding:64px 0 32px;text-align:center}
+  .hero h1{font-size:clamp(1.6rem,4vw,2.6rem);line-height:1.2;margin-bottom:14px}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);max-width:640px;margin:0 auto 8px;font-size:1.05rem}
+  .checker{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;margin:34px auto;max-width:720px}
+  .checker h2{font-size:1.15rem;margin-bottom:4px}
+  .checker .sub{color:var(--muted);font-size:.92rem;margin-bottom:16px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  input[type=text],input[type=email]{flex:1;min-width:200px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:12px 14px;font-size:1rem;outline:none}
+  input:focus{border-color:var(--acc)}
+  button{background:linear-gradient(90deg,var(--acc),var(--acc2));color:#fff;border:none;border-radius:9px;padding:12px 22px;font-size:1rem;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.55;cursor:wait}
+  .progress{margin-top:14px;color:var(--muted);font-size:.9rem;display:none}
+  .result{display:none;margin-top:22px}
+  .scorecard{display:flex;gap:18px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .grade{font-size:2.6rem;font-weight:800;width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+  .g-A{background:rgba(45,212,167,.15);color:var(--ok);border:2px solid var(--ok)}
+  .g-B{background:rgba(45,212,167,.1);color:var(--ok);border:2px solid var(--ok)}
+  .g-C{background:rgba(245,177,76,.12);color:var(--warn);border:2px solid var(--warn)}
+  .g-D,.g-E{background:rgba(244,96,122,.12);color:var(--bad);border:2px solid var(--bad)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+  .kpi{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .kpi b{display:block;font-size:1.25rem}
+  .kpi span{color:var(--muted);font-size:.82rem}
+  .issues{margin-top:14px}
+  .issue{padding:10px 12px;border-radius:9px;margin-bottom:8px;font-size:.92rem}
+  .i-bad{background:rgba(244,96,122,.1);border:1px solid rgba(244,96,122,.4)}
+  .i-warn{background:rgba(245,177,76,.08);border:1px solid rgba(245,177,76,.35)}
+  .i-ok{background:rgba(45,212,167,.08);border:1px solid rgba(45,212,167,.35)}
+  .cta-box{margin-top:18px;padding:16px;border:1px dashed var(--acc);border-radius:10px;background:rgba(79,140,255,.06)}
+  .cta-box p{font-size:.95rem;margin-bottom:10px}
+  section{padding:44px 0}
+  section h2{text-align:center;font-size:1.5rem;margin-bottom:8px}
+  section .lead{text-align:center;color:var(--muted);max-width:620px;margin:0 auto 28px}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+  .card h3{margin-bottom:8px;font-size:1.05rem}
+  .card p,.card li{color:var(--muted);font-size:.92rem}
+  .card ul{padding-left:18px;margin-top:8px}
+  .price{font-size:1.8rem;font-weight:800;margin:6px 0}
+  .price small{font-size:.85rem;color:var(--muted);font-weight:400}
+  .tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(124,92,255,.18);color:#b4a2ff;margin-bottom:10px}
+  .hl{border-color:var(--acc)}
+  .waitlist{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:30px;max-width:640px;margin:0 auto;text-align:center}
+  .waitlist p{color:var(--muted);margin-bottom:16px;font-size:.95rem}
+  .note{font-size:.8rem;color:var(--muted);margin-top:10px}
+  .faq details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:10px}
+  .faq summary{cursor:pointer;font-weight:600}
+  .faq p{color:var(--muted);font-size:.92rem;margin-top:8px}
+  footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;color:var(--muted);font-size:.85rem}
+  .okmsg{color:var(--ok);font-weight:600;display:none;margin-top:10px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">🛰️ Sentinelle <span>Routage</span></div></div></header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>La santé BGP/RPKI de votre réseau, <em>et le rapport que votre auditeur attend</em></h1>
+    <p>Hijacks de préfixes, ROA invalides ou expirés, fuites de routes : les incidents de routage se détectent trop tard. Sentinelle Routage surveille votre ASN 24/7 et génère des rapports de sécurité du routage prêts pour vos dossiers NIS2 et MANRS.</p>
+  </div>
+
+  <div class="checker" id="checker">
+    <h2>🔎 Testez gratuitement la santé routage de votre ASN</h2>
+    <div class="sub">Données live RIPEstat (RIPE NCC). Aucune inscription. Exemple : AS3215, AS16276, AS12876…</div>
+    <div class="row">
+      <input type="text" id="asn" placeholder="Votre numéro d'AS (ex. AS199422)" onkeydown="if(event.key==='Enter')runCheck()">
+      <button id="go" onclick="runCheck()">Analyser</button>
+    </div>
+    <div class="progress" id="prog"></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <section>
+    <h2>Ce que Sentinelle Routage surveillera pour vous</h2>
+    <p class="lead">Le test ci-dessus est une photo. Le service, c'est le film, 24 h/24.</p>
+    <div class="grid3">
+      <div class="card"><h3>🚨 Alertes temps réel</h3><p>Hijack de préfixe, fuite de routes, annonce inattendue, perte de visibilité, voisin BGP disparu. Par email, Slack ou webhook, en minutes.</p></div>
+      <div class="card"><h3>🔐 Hygiène RPKI continue</h3><p>ROA qui expire, préfixe annoncé sans ROA, invalid_length, divergence IRR/RPKI. On vous prévient avant que vos clients le remarquent.</p></div>
+      <div class="card"><h3>📋 Rapports de conformité</h3><p>Rapport mensuel de sécurité du routage formaté pour vos audits NIS2, votre adhésion MANRS et vos revues sécurité internes. Le PDF que l'auditeur range dans le dossier.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Tarifs au lancement</h2>
+    <p class="lead">Self-serve, sans engagement, sans appel commercial. Lancement prévu T3 2026.</p>
+    <div class="grid3">
+      <div class="card"><span class="tag">Gratuit</span><div class="price">0 €</div>
+        <ul><li>Check manuel illimité de votre ASN</li><li>Score de santé routage</li><li>1 alerte email hebdomadaire</li></ul></div>
+      <div class="card hl"><span class="tag">Standard</span><div class="price">39 € <small>/ mois</small></div>
+        <ul><li>1 ASN surveillé 24/7</li><li>Alertes temps réel (email, Slack, webhook)</li><li>Historique 12 mois</li><li>Hygiène RPKI continue</li></ul></div>
+      <div class="card"><span class="tag">Pro / MSP</span><div class="price">149 € <small>/ mois</small></div>
+        <ul><li>Jusqu'à 10 ASN</li><li>Rapports d'audit NIS2 / MANRS mensuels (PDF)</li><li>API</li><li>Support prioritaire par un ingénieur réseau</li></ul></div>
+    </div>
+  </section>
+
+  <section id="waitlist-section">
+    <div class="waitlist">
+      <h2>Rejoindre la liste d'attente</h2>
+      <p>Les 20 premiers inscrits auront 3 mois offerts sur le plan Standard et un accès direct à la roadmap.</p>
+      <form id="wl" onsubmit="return submitWL(event)">
+        <div class="row">
+          <input type="email" id="email" required placeholder="email@votre-noc.fr">
+          <input type="text" id="wl-asn" placeholder="Votre ASN (optionnel)">
+          <button type="submit" id="wlbtn">Je m'inscris</button>
+        </div>
+      </form>
+      <div class="okmsg" id="okmsg">✅ C'est noté. Vous aurez des nouvelles avant tout le monde.</div>
+      <div class="note">Pas de spam : 2-3 emails maximum d'ici au lancement, désinscription en un clic.</div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Questions fréquentes</h2><br>
+    <details><summary>En quoi est-ce différent de BGPalerter ?</summary><p>BGPalerter est un excellent outil open source, mais il faut l'héberger, le configurer, le maintenir et il ne produit aucun rapport de conformité. Sentinelle Routage est hébergé, prêt en 5 minutes, et génère les documents d'audit (NIS2, MANRS) que les outils d'alerting ne font pas.</p></details>
+    <details><summary>En quoi est-ce différent de bgp.tools ou Kentik ?</summary><p>bgp.tools est formidable pour l'observabilité exploratoire. Kentik et ThousandEyes sont des plateformes enterprise à 4-5 chiffres par mois. Sentinelle Routage fait une seule chose pour les réseaux de taille humaine : la surveillance de VOTRE ASN plus la preuve documentaire pour vos audits, à un prix d'ingénieur, pas de DSI.</p></details>
+    <details><summary>D'où viennent les données ?</summary><p>Sources publiques de référence : RIPE RIS, RouteViews et la RPKI publique (validateurs Routinator). Aucun agent à installer sur vos routeurs, aucun accès à votre réseau requis.</p></details>
+    <details><summary>NIS2 m'oblige-t-il vraiment à surveiller mon routage ?</summary><p>NIS2 n'impose pas RPKI mot pour mot. Mais la directive et le règlement d'exécution 2024/2690 exigent des mesures de gestion des risques et leur documentation pour le secteur des infrastructures numériques. Un rapport mensuel de sécurité du routage est exactement le type de preuve que les auditeurs demandent. Nous vous aidons à l'avoir sans y passer vos nuits.</p></details>
+    <details><summary>Qui est derrière ?</summary><p>N&R Consulting, société française. Le produit est conçu par un ingénieur réseau senior (backbone MPLS, Juniper/Cisco/Nokia) qui supervise des réseaux critiques depuis 18 ans, assisté par une ingénierie logicielle IA. Le support est répondu par quelqu'un qui a déjà été de votre côté de la console, à 3 h du matin.</p></details>
+  </section>
+</div>
+
+<footer>© 2026 N&R Consulting — Sentinelle Routage · Données : RIPE NCC (RIPEstat), RouteViews · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / liste d'attente</a></footer>
+
+<script>
+// ===== CONFIG =====
+const GFORM_ID = "1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg";
+const GFORM_ACTION = `https://docs.google.com/forms/d/e/${GFORM_ID}/formResponse`;
+const GFORM_URL = `https://docs.google.com/forms/d/e/${GFORM_ID}/viewform`;
+const ENTRY_EMAIL = "entry.621316823";
+const ENTRY_ASN = "entry.1661701622";
+const MAX_PREFIX_CHECK = 20; // échantillon RPKI
+
+const $ = id => document.getElementById(id);
+const api = path => fetch("https://stat.ripe.net/data/" + path).then(r => r.json());
+
+function parseASN(v){
+  const m = (v||"").trim().toUpperCase().replace(/^AS/,"").match(/^\d{1,10}$/);
+  return m ? m[0] : null;
+}
+
+async function runCheck(){
+  const asn = parseASN($("asn").value);
+  const prog = $("prog"), res = $("result"), btn = $("go");
+  if(!asn){ alert("Entre un numéro d'AS valide, ex. AS3215"); return; }
+  btn.disabled = true; res.style.display = "none"; res.innerHTML = "";
+  prog.style.display = "block"; prog.textContent = "Interrogation de RIPEstat…";
+  try{
+    const [ov, rs] = await Promise.all([
+      api(`as-overview/data.json?resource=AS${asn}`),
+      api(`routing-status/data.json?resource=AS${asn}`)
+    ]);
+    const holder = ov?.data?.holder || "(inconnu)";
+    const d = rs?.data || {};
+    const v4 = d.announced_space?.v4?.prefixes || 0;
+    const v6 = d.announced_space?.v6?.prefixes || 0;
+    const seen = d.visibility?.v4?.ris_peers_seeing || 0;
+    const total = d.visibility?.v4?.total_ris_peers || 1;
+    const neighbours = d.observed_neighbours || 0;
+    const visPct = Math.round(100*seen/total);
+
+    if(v4 + v6 === 0){
+      prog.style.display="none"; btn.disabled=false;
+      res.style.display="block";
+      res.innerHTML = `<div class="issue i-warn">AS${asn} (${holder}) n'annonce actuellement aucun préfixe visible par les collecteurs RIS. Vérifie le numéro d'AS.</div>`;
+      return;
+    }
+
+    prog.textContent = "Récupération des préfixes annoncés…";
+    const ap = await api(`announced-prefixes/data.json?resource=AS${asn}`);
+    const prefixes = (ap?.data?.prefixes || []).map(p => p.prefix);
+    const sample = prefixes.slice(0, MAX_PREFIX_CHECK);
+
+    let valid=0, invalid=0, notfound=0; const problems=[];
+    for(let i=0;i<sample.length;i++){
+      prog.textContent = `Validation RPKI ${i+1}/${sample.length} (${sample[i]})…`;
+      try{
+        const rv = await api(`rpki-validation/data.json?resource=AS${asn}&prefix=${encodeURIComponent(sample[i])}`);
+        const st = rv?.data?.status;
+        if(st === "valid") valid++;
+        else if(st && st.startsWith("invalid")){ invalid++; problems.push({p:sample[i], st}); }
+        else { notfound++; problems.push({p:sample[i], st:"sans ROA"}); }
+      }catch(e){ notfound++; }
+    }
+    const checked = valid+invalid+notfound;
+    const covPct = checked ? Math.round(100*valid/checked) : 0;
+
+    // Score
+    let score = 0;
+    score += covPct * 0.6;                       // 60 pts : couverture RPKI valide
+    score += (invalid===0 ? 25 : Math.max(0, 25 - invalid*10)); // 25 pts : aucun invalide
+    score += Math.min(15, visPct * 0.15);        // 15 pts : visibilité
+    score = Math.round(score);
+    const grade = score>=90?"A":score>=75?"B":score>=55?"C":score>=35?"D":"E";
+    const gradeMsg = {
+      A:"Excellente hygiène de routage. Le défi : que ça reste vrai à 3 h du matin.",
+      B:"Bonne base. Quelques angles morts à corriger pour viser la conformité MANRS.",
+      C:"Hygiène moyenne : des préfixes sans ROA ou des incohérences à traiter.",
+      D:"Exposition réelle aux hijacks et aux rejets RPKI. À corriger rapidement.",
+      E:"Routage à risque : vos préfixes peuvent être détournés ou filtrés sans que vous le sachiez."
+    }[grade];
+
+    let issuesHtml = "";
+    if(invalid>0) issuesHtml += `<div class="issue i-bad">🔴 <b>${invalid} préfixe(s) RPKI INVALID</b> sur l'échantillon : ces routes peuvent être rejetées par les opérateurs qui valident (et c'est la signature classique d'un souci de ROA). ${problems.filter(x=>x.st!=="sans ROA").slice(0,5).map(x=>`<code>${x.p}</code> (${x.st})`).join(", ")}</div>`;
+    if(notfound>0) issuesHtml += `<div class="issue i-warn">🟠 <b>${notfound} préfixe(s) sans ROA</b> : non protégés contre le hijack d'origine. Ex. : ${problems.filter(x=>x.st==="sans ROA").slice(0,5).map(x=>`<code>${x.p}</code>`).join(", ")}</div>`;
+    if(visPct<90) issuesHtml += `<div class="issue i-warn">🟠 Visibilité partielle : ${visPct} % des collecteurs RIS voient vos annonces.</div>`;
+    if(!issuesHtml) issuesHtml = `<div class="issue i-ok">🟢 Aucun problème détecté sur l'échantillon analysé. Beau travail.</div>`;
+
+    prog.style.display="none"; btn.disabled=false; res.style.display="block";
+    res.innerHTML = `
+      <div class="scorecard">
+        <div class="grade g-${grade}">${grade}</div>
+        <div>
+          <b>AS${asn} — ${holder}</b><br>
+          <span style="color:var(--muted);font-size:.92rem">${gradeMsg}</span>
+        </div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><b>${v4 + v6}</b><span>préfixes annoncés (v4+v6)</span></div>
+        <div class="kpi"><b>${covPct} %</b><span>RPKI valide (échantillon de ${checked})</span></div>
+        <div class="kpi"><b>${invalid}</b><span>préfixes INVALID</span></div>
+        <div class="kpi"><b>${visPct} %</b><span>visibilité RIS</span></div>
+        <div class="kpi"><b>${neighbours}</b><span>voisins BGP observés</span></div>
+      </div>
+      <div class="issues">${issuesHtml}</div>
+      <div class="cta-box">
+        <p><b>Cette photo date d'aujourd'hui.</b> Un ROA expire, un préfixe fuit, un hijack arrive : qui vous prévient ? Sentinelle Routage surveille AS${asn} en continu et produit le rapport mensuel pour vos audits.</p>
+        <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${asn}'">Surveiller AS${asn} → liste d'attente</button>
+      </div>`;
+  }catch(e){
+    prog.style.display="none"; btn.disabled=false; res.style.display="block";
+    res.innerHTML = `<div class="issue i-warn">RIPEstat ne répond pas pour cette ressource. Réessaie dans une minute.</div>`;
+  }
+}
+
+function submitWL(ev){
+  ev.preventDefault();
+  const email = $("email").value, asn = $("wl-asn").value;
+  const fd = new FormData();
+  fd.append(ENTRY_EMAIL, email);
+  fd.append(ENTRY_ASN, asn);
+  fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd})
+    .finally(()=>{ $("wl").style.display="none"; $("okmsg").style.display="block"; });
+  return false;
+}
+</script>
+</body>
+</html>
