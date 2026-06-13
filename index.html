@@ -390,17 +390,37 @@ function logPayIntent(asn){
     fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
   }catch(e){ /* no-op */ }
 }
-// Au clic : on logue le signal, on remercie, et on pousse vers la liste d'attente
-// pour récupérer un email contactable lié à cet ASN.
+// Au clic : on logue le signal d'intention TOUT DE SUITE (même si la personne
+// abandonne ensuite), puis on demande l'email EN PLACE pour rendre ce lead
+// recontactable. C'est le moment le plus précieux : on ne laisse pas filer le contact.
 function payIntent(asn){
   logPayIntent(asn);
   const box = document.getElementById("ctaBox");
-  if(box){
-    box.innerHTML = "<p><b>Noté, merci.</b> C'est exactement le signal qui m'aide à décider de lancer le service. Laissez votre email juste en dessous pour être prévenu en priorité au lancement (3 mois offerts pour les 20 premiers).</p>";
-  }
-  const wlAsn = document.getElementById("wl-asn"); if(wlAsn) wlAsn.value = "AS" + asn;
-  document.getElementById("waitlist-section").scrollIntoView({behavior:"smooth"});
-  const em = document.getElementById("email"); if(em) setTimeout(()=>em.focus(), 400);
+  if(!box) return;
+  box.innerHTML = `
+    <p><b>Noté, merci — c'est le signal qui m'aide à décider de lancer le service.</b><br>
+    Laissez votre email pour être <b>recontacté en priorité</b> (et 3 mois offerts pour les 20 premiers). Je reviens vers vous personnellement, d'ingénieur à ingénieur.</p>
+    <div class="row">
+      <input type="email" id="payEmail" placeholder="email@votre-noc.fr" onkeydown="if(event.key==='Enter')submitPayLead('${asn}')">
+      <button onclick="submitPayLead('${asn}')">Être recontacté</button>
+    </div>
+    <div class="note">Pas de spam. Votre AS${asn} est déjà noté.</div>`;
+  const pe = document.getElementById("payEmail"); if(pe) setTimeout(()=>pe.focus(), 200);
+}
+
+// Enregistre le lead « intention de payer » AVEC son email, marqué dans la colonne
+// ASN (« — INTENTION PAYER ») pour le distinguer d'une simple inscription liste
+// d'attente. C'est ce qui transforme un clic anonyme en prospect recontactable.
+function submitPayLead(asn){
+  const pe = document.getElementById("payEmail");
+  const email = pe ? pe.value.trim() : "";
+  if(!email || email.indexOf("@") < 1){ if(pe){ pe.focus(); pe.style.borderColor = "var(--bad)"; } return; }
+  const fd = new FormData();
+  fd.append(ENTRY_EMAIL, email);
+  fd.append(ENTRY_ASN, "AS" + asn + " — INTENTION PAYER");
+  fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  const box = document.getElementById("ctaBox");
+  if(box) box.innerHTML = "<p>✅ <b>Parfait, c'est noté.</b> Vous serez recontacté en priorité au lancement (3 mois offerts pour les 20 premiers). Merci de faire avancer le projet.</p>";
 }
 
 // Logue une "visite" une seule fois par session de navigation (même tuyau que
