@@ -155,6 +155,8 @@ const ANALYTICS_EMAIL = "analyse@sentinelle-routage.invalid";
 // Marqueur "visite" : une ligne par session de navigation, pour mesurer
 // combien de personnes arrivent sur la page (et quel taux lance une analyse).
 const VISIT_EMAIL = "visite@sentinelle-routage.invalid";
+// Marqueur "intention de payer" : clic sur le bouton 39 €/mois dans le résultat.
+const PAY_EMAIL = "paiement@sentinelle-routage.invalid";
 
 const $ = id => document.getElementById(id);
 const api = path => fetch("https://stat.ripe.net/data/" + path).then(r => r.json());
@@ -260,9 +262,10 @@ async function runCheck(){
         <div class="kpi"><b>${neighbours}</b><span>voisins BGP observés</span></div>
       </div>
       <div class="issues">${issuesHtml}</div>
-      <div class="cta-box">
+      <div class="cta-box" id="ctaBox">
         <p><b>Cette photo date d'aujourd'hui.</b> Un ROA expire, un préfixe fuit, un hijack arrive : qui vous prévient ? Sentinelle Routage surveille AS${asn} en continu et produit le rapport mensuel pour vos audits.</p>
-        <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${asn}'">Surveiller AS${asn} → liste d'attente</button>
+        <button onclick="payIntent('${asn}')">💶 Je paierais pour surveiller AS${asn} en continu (39 €/mois)</button>
+        <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Juste me tenir informé</button>
       </div>`;
   }catch(e){
     prog.style.display="none"; btn.disabled=false; res.style.display="block";
@@ -279,6 +282,28 @@ function submitWL(ev){
   fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd})
     .finally(()=>{ $("wl").style.display="none"; $("okmsg").style.display="block"; });
   return false;
+}
+
+// Logue une "intention de payer" (clic sur le bouton 39 €/mois), marquée par PAY_EMAIL.
+function logPayIntent(asn){
+  try{
+    const fd = new FormData();
+    fd.append(ENTRY_EMAIL, PAY_EMAIL);
+    fd.append(ENTRY_ASN, "AS" + asn);
+    fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  }catch(e){ /* no-op */ }
+}
+// Au clic : on logue le signal, on remercie, et on pousse vers la liste d'attente
+// pour récupérer un email contactable lié à cet ASN.
+function payIntent(asn){
+  logPayIntent(asn);
+  const box = document.getElementById("ctaBox");
+  if(box){
+    box.innerHTML = "<p><b>Noté, merci.</b> C'est exactement le signal qui m'aide à décider de lancer le service. Laissez votre email juste en dessous pour être prévenu en priorité au lancement (3 mois offerts pour les 20 premiers).</p>";
+  }
+  const wlAsn = document.getElementById("wl-asn"); if(wlAsn) wlAsn.value = "AS" + asn;
+  document.getElementById("waitlist-section").scrollIntoView({behavior:"smooth"});
+  const em = document.getElementById("email"); if(em) setTimeout(()=>em.focus(), 400);
 }
 
 // Logue une "visite" une seule fois par session de navigation (même tuyau que
