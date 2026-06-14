@@ -101,6 +101,17 @@
   </section>
 
   <section>
+    <h2>Le routage casse sans prévenir</h2>
+    <p class="lead">Un hijack ou une fuite, c'est silencieux et rapide. RIPEstat te le montre, à condition de regarder au bon moment. Trois cas documentés :</p>
+    <div class="grid3">
+      <div class="card"><h3>Avr. 2018 — MyEtherWallet</h3><p>Un préfixe d'Amazon Route 53 détourné (origine AS10297). Les utilisateurs redirigés vers un faux site, <b>~150 000 $ d'Ether volés</b>. L'attaque a tourné ~2 h avant d'être comprise.</p></div>
+      <div class="card"><h3>Juin 2019 — Verizon</h3><p>Une fuite de routes via un « BGP optimizer » propagée par Verizon. <b>Cloudflare, AWS et des milliers de sites injoignables ~2 h</b>. Personne n'avait fauté chez les victimes.</p></div>
+      <div class="card"><h3>Août 2022 — Celer cBridge</h3><p>Un préfixe Amazon hijacké <b>~3 h</b> pour détourner un pont crypto vers un contrat malveillant. <b>~235 000 $ volés</b> avant endiguement.</p></div>
+    </div>
+    <p class="lead" style="margin-top:18px;margin-bottom:0">Aucun de ces incidents n'aurait été stoppé par un check manuel lancé une fois par trimestre. Tous étaient détectables <b>en minutes</b> par une surveillance BGP continue.</p>
+  </section>
+
+  <section>
     <h2>Tarifs au lancement</h2>
     <p class="lead">Self-serve, sans engagement, sans appel commercial. Lancement prévu T3 2026.</p>
     <div class="grid3">
@@ -110,6 +121,26 @@
         <ul><li><b>Test complet : tous vos préfixes</b>, pas un échantillon</li><li>1 ASN surveillé 24/7</li><li>Alertes temps réel (email, Slack, webhook)</li><li>Historique 12 mois</li><li>Hygiène RPKI continue</li></ul></div>
       <div class="card"><span class="tag">Pro / MSP</span><div class="price">149 € <small>/ mois</small></div>
         <ul><li>Jusqu'à 10 ASN</li><li>Rapports d'audit NIS2 / MANRS mensuels (PDF)</li><li>API</li><li>Support prioritaire par un ingénieur réseau</li></ul></div>
+    </div>
+  </section>
+
+  <section id="dp-section">
+    <div class="waitlist" style="border-color:var(--acc)">
+      <span class="tag" style="background:rgba(45,212,167,.15);color:var(--ok)">Programme fondateur</span>
+      <h2>Devenez l'un des 10 réseaux fondateurs</h2>
+      <p>Vous opérez un ASN et la surveillance continue + la preuve de conformité vous parlent ? Rejoignez le programme design partner : <b>surveillance offerte pendant toute la beta</b>, votre avis qui oriente la roadmap, et un accès direct à l'ingénieur derrière l'outil. En échange : quelques retours d'usage, et l'autorisation (optionnelle) de citer votre réseau comme pilote.</p>
+      <form id="dp" onsubmit="return submitDP(event)">
+        <div class="row">
+          <input type="email" id="dp-email" required placeholder="email@votre-noc.fr">
+          <input type="text" id="dp-asn" required placeholder="Votre ASN (ex. AS201659)">
+        </div>
+        <div class="row" style="margin-top:10px">
+          <input type="text" id="dp-org" placeholder="Réseau / organisation (optionnel)">
+          <button type="submit" id="dpbtn">Candidater comme réseau fondateur</button>
+        </div>
+      </form>
+      <div class="okmsg" id="dpok">✅ Candidature reçue. Je vous recontacte personnellement, d'ingénieur à ingénieur.</div>
+      <div class="note">10 places. Priorité aux opérateurs, hébergeurs, MSP et entités NIS2.</div>
     </div>
   </section>
 
@@ -340,6 +371,14 @@ function renderResult(m, ageMin){
     ? `<div class="issue i-warn" style="background:rgba(124,92,255,.06);border-color:rgba(124,92,255,.35)">🔎 Test gratuit réalisé sur un <b>échantillon de ${m.checked} préfixe(s)</b> sur ${m.totalPrefixes} annoncés. La surveillance payante teste <b>la totalité de vos préfixes</b>, en continu.</div>`
     : "";
 
+  // Accroche du CTA, calibrée sur le score : un routage propre tue l'urgence
+  // ("je vais bien, pourquoi payer ?") → on mène par l'asymétrie (rien ne sonne
+  // quand ça casse). Un routage dégradé → on pointe l'angle mort déjà visible.
+  const clean = (m.grade === "A" || m.grade === "B");
+  const ctaLead = clean
+    ? `<p><b>Ton routage est propre — aujourd'hui.</b> Le jour où un de tes préfixes est détourné ou qu'un ROA expire, <b>rien ne sonne</b> de ton côté : tu l'apprends par tes clients, ou par ton auditeur. RIPEstat te le montrerait… si tu pensais à le regarder au bon moment, à 3 h du matin. La surveillance, c'est regarder pour toi, en continu :</p>`
+    : `<p><b>Tu as déjà des angles morts ci-dessus — et personne ne te préviendra quand ça empire</b>, ni quand quelqu'un en profite. Une photo ponctuelle ne couvre qu'un échantillon. Voici ce que comble la surveillance payante :</p>`;
+
   res.innerHTML = `
     ${cachedNote}
     <div class="scorecard">
@@ -358,7 +397,7 @@ function renderResult(m, ageMin){
     </div>
     <div class="issues">${sampleNote}${issuesHtml}</div>
     <div class="cta-box" id="ctaBox">
-      <p><b>Cette photo date d'aujourd'hui — et ne couvre qu'un échantillon.</b> Voici ce que débloque la surveillance payante :</p>
+      ${ctaLead}
       <ul style="margin:0 0 12px 18px;color:var(--muted);font-size:.92rem">
         <li><b>Test complet</b> : tous vos préfixes validés, pas un échantillon de ${m.checked}.</li>
         <li><b>Surveillance 24/7</b> : hijack, fuite de route, ROA qui expire, perte de visibilité.</li>
@@ -367,6 +406,7 @@ function renderResult(m, ageMin){
       </ul>
       <button onclick="payIntent('${m.asn}')">💶 Je paierais pour surveiller AS${m.asn} en continu (39 €/mois)</button>
       <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${m.asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Juste me tenir informé</button>
+      <div style="margin-top:12px;font-size:.88rem;color:var(--muted)">Vous opérez AS${m.asn} ? <a href="#dp-section" onclick="document.getElementById('dp-asn').value='AS${m.asn}';document.getElementById('dp-section').scrollIntoView({behavior:'smooth'});return false;" style="color:var(--acc)">Devenez l'un des 10 réseaux fondateurs</a> — surveillance offerte pendant la beta.</div>
     </div>`;
 }
 
@@ -378,6 +418,22 @@ function submitWL(ev){
   fd.append(ENTRY_ASN, asn);
   fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd})
     .finally(()=>{ $("wl").style.display="none"; $("okmsg").style.display="block"; });
+  return false;
+}
+
+// Programme design partner : signal de validation FORT (engagement réel, pas un
+// simple clic). Marqué "— DESIGN PARTNER" dans la colonne ASN pour le distinguer
+// sur le dashboard des inscriptions liste d'attente et des intentions de payer.
+function submitDP(ev){
+  ev.preventDefault();
+  const email = ($("dp-email").value||"").trim();
+  const asn = ($("dp-asn").value||"").trim();
+  const org = ($("dp-org").value||"").trim();
+  const fd = new FormData();
+  fd.append(ENTRY_EMAIL, email);
+  fd.append(ENTRY_ASN, asn + (org ? " (" + org + ")" : "") + " — DESIGN PARTNER");
+  fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd})
+    .finally(()=>{ $("dp").style.display="none"; $("dpok").style.display="block"; });
   return false;
 }
 
