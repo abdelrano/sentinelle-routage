@@ -5,6 +5,71 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sentinelle Routage — Santé BGP/RPKI de votre ASN en 30 secondes</title>
 <meta name="description" content="Vérifiez gratuitement la santé du routage de votre ASN : couverture RPKI, ROA invalides, visibilité BGP. Alertes 24/7 et rapports de conformité NIS2/MANRS bientôt disponibles.">
+<link rel="canonical" href="https://sentinelle-routage.fr/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sentinelle Routage">
+<meta property="og:title" content="Sentinelle Routage — Santé BGP/RPKI de votre ASN en 30 secondes">
+<meta property="og:description" content="Test gratuit de la santé routage de votre ASN (RPKI, ROA, visibilité BGP), sans inscription. Surveillance 24/7 et rapports de conformité NIS2/MANRS au lancement.">
+<meta property="og:url" content="https://sentinelle-routage.fr/">
+<meta property="og:image" content="https://sentinelle-routage.fr/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sentinelle Routage — Santé BGP/RPKI de votre ASN en 30 secondes">
+<meta name="twitter:description" content="Test gratuit de la santé routage de votre ASN (RPKI, ROA, visibilité BGP), sans inscription. Surveillance 24/7 et rapports NIS2/MANRS au lancement.">
+<meta name="twitter:image" content="https://sentinelle-routage.fr/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Sentinelle Routage",
+      "url": "https://sentinelle-routage.fr/",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Web",
+      "description": "Surveillance BGP/RPKI d'ASN 24/7 avec alertes temps réel et rapports de conformité NIS2/MANRS. Test gratuit de santé routage sans inscription.",
+      "offers": [
+        {"@type": "Offer", "name": "Gratuit", "price": "0", "priceCurrency": "EUR"},
+        {"@type": "Offer", "name": "Standard", "price": "39", "priceCurrency": "EUR"},
+        {"@type": "Offer", "name": "Pro / MSP", "price": "149", "priceCurrency": "EUR"}
+      ],
+      "provider": {"@type": "Organization", "name": "N&R Consulting", "url": "https://sentinelle-routage.fr/"}
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "En quoi est-ce différent de BGPalerter ?",
+          "acceptedAnswer": {"@type": "Answer", "text": "BGPalerter est un excellent outil open source, mais il faut l'héberger, le configurer, le maintenir et il ne produit aucun rapport de conformité. Sentinelle Routage est hébergé, prêt en 5 minutes, et génère les documents d'audit (NIS2, MANRS) que les outils d'alerting ne font pas."}
+        },
+        {
+          "@type": "Question",
+          "name": "En quoi est-ce différent de bgp.tools ou Kentik ?",
+          "acceptedAnswer": {"@type": "Answer", "text": "bgp.tools est formidable pour l'observabilité exploratoire. Kentik et ThousandEyes sont des plateformes enterprise à 4-5 chiffres par mois. Sentinelle Routage fait une seule chose pour les réseaux de taille humaine : la surveillance de votre ASN plus la preuve documentaire pour vos audits, à un prix d'ingénieur, pas de DSI."}
+        },
+        {
+          "@type": "Question",
+          "name": "D'où viennent les données ?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Sources publiques de référence : RIPE RIS, RouteViews et la RPKI publique (validateurs Routinator). Aucun agent à installer sur vos routeurs, aucun accès à votre réseau requis."}
+        },
+        {
+          "@type": "Question",
+          "name": "NIS2 m'oblige-t-il vraiment à surveiller mon routage ?",
+          "acceptedAnswer": {"@type": "Answer", "text": "NIS2 n'impose pas RPKI mot pour mot. Mais la directive et le règlement d'exécution 2024/2690 exigent des mesures de gestion des risques et leur documentation pour le secteur des infrastructures numériques. Un rapport mensuel de sécurité du routage est exactement le type de preuve que les auditeurs demandent."}
+        },
+        {
+          "@type": "Question",
+          "name": "Qui est derrière Sentinelle Routage ?",
+          "acceptedAnswer": {"@type": "Answer", "text": "N&R Consulting, société française. Le produit est conçu par un ingénieur réseau senior (backbone MPLS, Juniper/Cisco/Nokia) qui supervise des réseaux critiques depuis 18 ans, assisté par une ingénierie logicielle IA."}
+        }
+      ]
+    }
+  ]
+}
+</script>
 <style>
   :root{
     --bg:#0b1220; --panel:#111a2e; --panel2:#0e1626; --line:#1f2c47;
