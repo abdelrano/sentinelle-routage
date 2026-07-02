@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sentinelle Routage — Your ASN's BGP/RPKI health in 30 seconds</title>
+<title>Sentinelle Routage — Your ASN's BGP/RPKI health in under a minute</title>
 <meta name="description" content="Free BGP/RPKI health check for your ASN: ROA coverage, invalid prefixes, BGP visibility. 24/7 monitoring and NIS2/MANRS compliance reports coming soon.">
 <link rel="canonical" href="https://sentinelle-routage.fr/en/">
 <link rel="alternate" hreflang="fr" href="https://sentinelle-routage.fr/">
 <link rel="alternate" hreflang="en" href="https://sentinelle-routage.fr/en/">
-<link rel="alternate" hreflang="x-default" href="https://sentinelle-routage.fr/">
+<link rel="alternate" hreflang="x-default" href="https://sentinelle-routage.fr/en/">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230b1220' stroke='%234f8cff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%234f8cff' stroke-width='1.5' opacity='.6'/%3E%3Ccircle cx='20' cy='12' r='3' fill='%232dd4a7'/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Sentinelle Routage">
-<meta property="og:title" content="Sentinelle Routage — Your ASN's BGP/RPKI health in 30 seconds">
+<meta property="og:title" content="Sentinelle Routage — Your ASN's BGP/RPKI health in under a minute">
 <meta property="og:description" content="Free routing health check for your ASN (RPKI, ROA, BGP visibility), no sign-up. 24/7 monitoring and NIS2/MANRS compliance reports at launch.">
 <meta property="og:url" content="https://sentinelle-routage.fr/en/">
 <meta property="og:image" content="https://sentinelle-routage.fr/og-image-en.png">
@@ -19,7 +20,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Sentinelle Routage — Your ASN's BGP/RPKI health in 30 seconds">
+<meta name="twitter:title" content="Sentinelle Routage — Your ASN's BGP/RPKI health in under a minute">
 <meta name="twitter:description" content="Free routing health check for your ASN (RPKI, ROA, BGP visibility), no sign-up. 24/7 monitoring and NIS2/MANRS reports at launch.">
 <meta name="twitter:image" content="https://sentinelle-routage.fr/og-image-en.png">
 <script type="application/ld+json">
@@ -57,7 +58,7 @@
         {
           "@type": "Question",
           "name": "Where does the data come from?",
-          "acceptedAnswer": {"@type": "Answer", "text": "Public reference sources: RIPE RIS, RouteViews and the public RPKI (Routinator validators). No agent to install on your routers, no access to your network required."}
+          "acceptedAnswer": {"@type": "Answer", "text": "The data comes from RIPEstat (RIS), the RIPE NCC's public data service, RPKI validation included. No agent to install on your routers, no access to your network required."}
         },
         {
           "@type": "Question",
@@ -154,11 +155,11 @@
     <h2>🔎 Test your ASN's routing health for free</h2>
     <div class="sub">Live RIPEstat data (RIPE NCC). No sign-up. Examples: AS3215, AS16276, AS12876…</div>
     <div class="row">
-      <input type="text" id="asn" placeholder="Your AS number (e.g. AS199422)" onkeydown="if(event.key==='Enter')runCheck()">
+      <input type="text" id="asn" aria-label="AS number" placeholder="Your AS number (e.g. AS199422)" onkeydown="if(event.key==='Enter')runCheck()">
       <button id="go" onclick="runCheck()">Analyze</button>
     </div>
-    <div class="progress" id="prog"></div>
-    <div class="result" id="result"></div>
+    <div class="progress" id="prog" aria-live="polite"></div>
+    <div class="result" id="result" aria-live="polite"></div>
   </div>
 
   <section>
@@ -187,9 +188,9 @@
     <p class="lead">Self-serve, no commitment, no sales call. Launch planned for Q3 2026.</p>
     <div class="grid3">
       <div class="card"><span class="tag">Free</span><div class="price">€0</div>
-        <ul><li>Unlimited manual checks of your ASN</li><li>Routing health score</li><li>RPKI validation on a <b>sample</b> of prefixes</li><li>One-off snapshot (no monitoring)</li></ul></div>
+        <ul><li>Unlimited manual checks of your ASN</li><li>Routing health score</li><li>RPKI validation of <b>all your announced prefixes</b></li><li>One-off snapshot (no monitoring)</li></ul></div>
       <div class="card hl"><span class="tag">Standard</span><div class="price">€39 <small>/ month</small></div>
-        <ul><li><b>Full test: all your prefixes</b>, not a sample</li><li>1 ASN monitored 24/7</li><li>Real-time alerts (email, Slack, webhook)</li><li>12-month history</li><li>Continuous RPKI hygiene</li></ul></div>
+        <ul><li>1 ASN monitored <b>24/7</b></li><li>Real-time alerts (email, Slack, webhook)</li><li>12-month history</li><li>Continuous RPKI hygiene</li></ul></div>
       <div class="card"><span class="tag">Pro / MSP</span><div class="price">€149 <small>/ month</small></div>
         <ul><li>Up to 10 ASNs</li><li>Monthly NIS2 / MANRS audit reports (PDF)</li><li>API</li><li>Priority support from a network engineer</li></ul></div>
     </div>
@@ -202,11 +203,11 @@
       <p>You operate an ASN, and continuous monitoring plus compliance evidence speak to you? Join the design partner program: <b>free monitoring for the whole beta</b>, your feedback steering the roadmap, and direct access to the engineer behind the tool. In exchange: some usage feedback, and (optional) permission to mention your network as a pilot.</p>
       <form id="dp" onsubmit="return submitDP(event)">
         <div class="row">
-          <input type="email" id="dp-email" required placeholder="email@your-noc.com">
-          <input type="text" id="dp-asn" required placeholder="Your ASN (e.g. AS201659)">
+          <input type="email" id="dp-email" required aria-label="Email" placeholder="email@your-noc.com">
+          <input type="text" id="dp-asn" required aria-label="Your ASN" placeholder="Your ASN (e.g. AS201659)">
         </div>
         <div class="row" style="margin-top:10px">
-          <input type="text" id="dp-org" placeholder="Network / organization (optional)">
+          <input type="text" id="dp-org" aria-label="Network or organization (optional)" placeholder="Network / organization (optional)">
           <button type="submit" id="dpbtn">Apply as a founding network</button>
         </div>
       </form>
@@ -221,8 +222,8 @@
       <p>The first 20 sign-ups get 3 months free on the Standard plan and direct input on the roadmap.</p>
       <form id="wl" onsubmit="return submitWL(event)">
         <div class="row">
-          <input type="email" id="email" required placeholder="email@your-noc.com">
-          <input type="text" id="wl-asn" placeholder="Your ASN (optional)">
+          <input type="email" id="email" required aria-label="Email" placeholder="email@your-noc.com">
+          <input type="text" id="wl-asn" aria-label="Your ASN (optional)" placeholder="Your ASN (optional)">
           <button type="submit" id="wlbtn">Sign me up</button>
         </div>
       </form>
@@ -235,13 +236,13 @@
     <h2>Frequently asked questions</h2><br>
     <details><summary>How is this different from BGPalerter?</summary><p>BGPalerter is an excellent open-source tool, but you have to host it, configure it, maintain it — and it produces no compliance reports. Sentinelle Routage is hosted, ready in 5 minutes, and generates the audit documents (NIS2, MANRS) that alerting tools don't.</p></details>
     <details><summary>How is this different from bgp.tools or Kentik?</summary><p>bgp.tools is fantastic for exploratory observability. Kentik and ThousandEyes are enterprise platforms at 4-5 figures a month. Sentinelle Routage does one thing for human-scale networks: monitoring YOUR ASN plus the documentary evidence for your audits, at an engineer's price, not a CIO's.</p></details>
-    <details><summary>Where does the data come from?</summary><p>Public reference sources: RIPE RIS, RouteViews and the public RPKI (Routinator validators). No agent to install on your routers, no access to your network required.</p></details>
+    <details><summary>Where does the data come from?</summary><p>The data comes from RIPEstat (RIS), the RIPE NCC's public data service, RPKI validation included. No agent to install on your routers, no access to your network required.</p></details>
     <details><summary>Does NIS2 really require me to monitor my routing?</summary><p>NIS2 doesn't mandate RPKI word for word. But the directive and implementing regulation 2024/2690 require risk-management measures and their documentation for the digital infrastructure sector. A monthly routing security report is exactly the kind of evidence auditors ask for. We help you have it without spending your nights on it.</p></details>
     <details><summary>Who is behind this?</summary><p>N&R Consulting, a French company. The product is built by a senior network engineer (MPLS backbone, Juniper/Cisco/Nokia) who has been operating critical networks for 18 years, assisted by AI software engineering. Support is answered by someone who has been on your side of the console at 3 a.m.</p></details>
   </section>
 </div>
 
-<footer>© 2026 N&R Consulting — Sentinelle Routage · Data: RIPE NCC (RIPEstat), RouteViews · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / waiting list</a></footer>
+<footer>© 2026 N&R Consulting — Sentinelle Routage · Data: RIPE NCC (RIPEstat) · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / waiting list</a></footer>
 
 <script>
 // ===== CONFIG =====
@@ -252,7 +253,8 @@ const GFORM_ACTION = `https://docs.google.com/forms/d/e/${GFORM_ID}/formResponse
 const GFORM_URL = `https://docs.google.com/forms/d/e/${GFORM_ID}/viewform`;
 const ENTRY_EMAIL = "entry.621316823";
 const ENTRY_ASN = "entry.1661701622";
-const MAX_PREFIX_CHECK = 20; // free RPKI sample. Paid tests ALL prefixes.
+const MAX_PREFIX_CHECK = 20; // fallback sample size, and cap on per-prefix verifications
+// Cloudflare proxy (anti rate-limit cache) in front of the RIPEstat API.
 const RIPE_BASE = "https://sentinelle-proxy.netrconsulting.workers.dev/data/";
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 h cache per ASN
 const API_RETRIES = 3;
@@ -279,7 +281,7 @@ async function api(path, attempt = 0){
 
 function cacheGet(asn){
   try{
-    const raw = localStorage.getItem("sr_res_AS" + asn);
+    const raw = localStorage.getItem("sr_res2_AS" + asn);
     if(!raw) return null;
     const obj = JSON.parse(raw);
     if(Date.now() - obj.t > CACHE_TTL_MS) return null;
@@ -287,13 +289,49 @@ function cacheGet(asn){
   }catch(e){ return null; }
 }
 function cacheSet(asn, model){
-  try{ localStorage.setItem("sr_res_AS" + asn, JSON.stringify({t: Date.now(), model})); }
+  try{ localStorage.setItem("sr_res2_AS" + asn, JSON.stringify({t: Date.now(), model})); }
   catch(e){ /* quota or private mode: ignore */ }
 }
 
 function parseASN(v){
   const m = (v||"").trim().toUpperCase().replace(/^AS/,"").match(/^\d{1,10}$/);
-  return m ? m[0] : null;
+  if(!m) return null;
+  const n = Number(m[0]);
+  return (n >= 1 && n <= 4294967295) ? String(n) : null;
+}
+
+// HTML escaping (via textContent) for any data coming from the API.
+function esc(s){
+  const d = document.createElement("div");
+  d.textContent = s == null ? "" : String(s);
+  return d.innerHTML;
+}
+
+// ---- CIDR comparison (v4 and v6) to cross announced prefixes with ROAs ----
+function ipToBigInt(ip){
+  if(ip.indexOf(":") === -1){
+    return ip.split(".").reduce((acc,o)=>(acc<<8n)+BigInt(parseInt(o,10)||0), 0n);
+  }
+  // IPv6: expand "::" then read 8 groups of 16 bits
+  const parts = ip.split("::");
+  const head = parts[0] ? parts[0].split(":") : [];
+  const tail = parts.length > 1 && parts[1] ? parts[1].split(":") : [];
+  const groups = parts.length > 1
+    ? head.concat(new Array(Math.max(0, 8 - head.length - tail.length)).fill("0"), tail)
+    : head;
+  return groups.reduce((acc,g)=>(acc<<16n)+BigInt(parseInt(g||"0",16)||0), 0n);
+}
+function parseCidr(c){
+  const i = c.lastIndexOf("/");
+  const ip = c.slice(0, i);
+  const v6 = ip.indexOf(":") !== -1;
+  return { v6, len: parseInt(c.slice(i+1), 10), val: ipToBigInt(ip), size: v6 ? 128 : 32 };
+}
+// Is the announced prefix `ann` contained in the ROA prefix `roa`?
+function cidrContains(roa, ann){
+  if(roa.v6 !== ann.v6 || ann.len < roa.len) return false;
+  const shift = BigInt(roa.size - roa.len);
+  return (roa.val >> shift) === (ann.val >> shift);
 }
 
 function logAnalysis(asn){
@@ -326,7 +364,7 @@ async function runCheck(force){
     const model = await analyze(asn, prog);
     if(model.empty){
       prog.style.display="none"; btn.disabled=false; res.style.display="block";
-      res.innerHTML = `<div class="issue i-warn">AS${asn} (${model.holder}) currently announces no prefixes visible to RIS collectors. Double-check the AS number.</div>`;
+      res.innerHTML = `<div class="issue i-warn">AS${asn} (${esc(model.holder)}) currently announces no prefixes visible to RIS collectors. Double-check the AS number.</div>`;
       return;
     }
     logAnalysis(asn);
@@ -351,20 +389,110 @@ async function analyze(asn, prog){
   const d = rs?.data || {};
   const v4 = d.announced_space?.v4?.prefixes || 0;
   const v6 = d.announced_space?.v6?.prefixes || 0;
-  const seen = d.visibility?.v4?.ris_peers_seeing || 0;
-  const total = d.visibility?.v4?.total_ris_peers || 1;
   const neighbours = d.observed_neighbours || 0;
-  const visPct = Math.round(100*seen/total);
   const totalPrefixes = v4 + v6;
+
+  // RIS visibility: v4/v6 average weighted by the prefix count of each family
+  // (an IPv6-only AS must not come out at 0%).
+  const sV4 = d.visibility?.v4?.ris_peers_seeing || 0, tV4 = d.visibility?.v4?.total_ris_peers || 0;
+  const sV6 = d.visibility?.v6?.ris_peers_seeing || 0, tV6 = d.visibility?.v6?.total_ris_peers || 0;
+  const pctV4 = tV4 ? 100*sV4/tV4 : null;
+  const pctV6 = tV6 ? 100*sV6/tV6 : null;
+  let visPct;
+  if(v4 > 0 && v6 > 0 && pctV4 !== null && pctV6 !== null) visPct = Math.round((pctV4*v4 + pctV6*v6) / (v4+v6));
+  else if(v4 > 0 && pctV4 !== null) visPct = Math.round(pctV4);
+  else if(v6 > 0 && pctV6 !== null) visPct = Math.round(pctV6);
+  else visPct = Math.round(Math.max(pctV4 || 0, pctV6 || 0));
 
   if(totalPrefixes === 0) return {empty:true, holder};
 
   if(prog) prog.textContent = "Fetching announced prefixes…";
   const ap = await api(`announced-prefixes/data.json?resource=AS${asn}`);
   const prefixes = (ap?.data?.prefixes || []).map(p => p.prefix);
-  const sample = prefixes.slice(0, MAX_PREFIX_CHECK);
 
-  let valid=0, invalid=0, notfound=0; const problems=[];
+  // RPKI validation: full test via the AS's ROA list;
+  // if that fails, fall back to the old sampling method.
+  let rpki;
+  try{
+    rpki = await validateWithRoas(asn, prefixes, prog);
+  }catch(e){
+    rpki = await validateBySample(asn, prefixes, prog);
+  }
+  // If nothing could be checked because of the network, surface the global error.
+  if(rpki.checked === 0 && rpki.errors > 0) throw new Error("RPKI validation impossible");
+
+  const {valid, invalid, notfound, errors, problems, checked, sampled} = rpki;
+  const covPct = checked ? Math.round(100*valid/checked) : 0;
+
+  let score = 0;
+  score += covPct * 0.6;
+  score += (invalid===0 ? 25 : Math.max(0, 25 - invalid*10));
+  score += Math.min(15, visPct * 0.15);
+  score = Math.round(score);
+  let grade = score>=90?"A":score>=75?"B":score>=55?"C":score>=35?"D":"E";
+  if(notfound > 0 && grade === "A") grade = "B"; // ≥1 prefix without a ROA ⇒ no grade A
+
+  return {
+    asn, holder, v4, v6, totalPrefixes, visPct, neighbours,
+    covPct, checked, invalid, notfound, errors, problems, score, grade,
+    sampled // true = only a sample could be tested (fallback mode)
+  };
+}
+
+// Full test: the AS's ROA list (rpki-roas endpoint) crossed client-side with
+// ALL announced prefixes. A prefix is valid if it is contained in the prefix
+// of one of the AS's ROAs with a length ≤ maxLength.
+async function validateWithRoas(asn, prefixes, prog){
+  if(prog) prog.textContent = "Fetching RPKI ROAs…";
+  const rr = await api(`rpki-roas/data.json?resource=AS${asn}`);
+  const list = rr?.data?.roas;
+  if(!Array.isArray(list)) throw new Error("unexpected rpki-roas format");
+  const roas = list.map(r => {
+    const c = parseCidr(String(r.prefix));
+    c.maxLength = Number.isFinite(+r.maxLength) ? +r.maxLength : c.len;
+    return c;
+  });
+
+  let valid=0, invalid=0, notfound=0; const problems=[]; const uncovered=[];
+  const pushProblem = (p, st) => { if(problems.length < 30) problems.push({p, st}); };
+  if(prog) prog.textContent = `RPKI validation of ${prefixes.length} prefixes…`;
+  for(const p of prefixes){
+    const ann = parseCidr(p);
+    let covered=false, lenOk=false;
+    for(const roa of roas){
+      if(!cidrContains(roa, ann)) continue;
+      covered = true;
+      if(ann.len <= roa.maxLength){ lenOk = true; break; }
+    }
+    if(lenOk) valid++;
+    else if(covered){ invalid++; pushProblem(p, "invalid,more-specific"); }
+    else uncovered.push(p);
+  }
+
+  // A prefix without a ROA from this AS may be covered by another AS's ROA
+  // (origin invalid): per-prefix verification, capped at MAX_PREFIX_CHECK.
+  const toVerify = uncovered.slice(0, MAX_PREFIX_CHECK);
+  for(let i=0;i<toVerify.length;i++){
+    if(prog) prog.textContent = `Checking prefixes without a ROA ${i+1}/${toVerify.length} (${toVerify[i]})…`;
+    try{
+      const rv = await api(`rpki-validation/data.json?resource=AS${asn}&prefix=${encodeURIComponent(toVerify[i])}`);
+      const st = rv?.data?.status;
+      if(st === "valid") valid++;
+      else if(st && st.startsWith("invalid")){ invalid++; pushProblem(toVerify[i], st); }
+      else { notfound++; pushProblem(toVerify[i], "no ROA"); }
+    }catch(e){ notfound++; pushProblem(toVerify[i], "no ROA"); }
+  }
+  for(const p of uncovered.slice(MAX_PREFIX_CHECK)){ notfound++; pushProblem(p, "no ROA"); }
+
+  return {valid, invalid, notfound, errors:0, problems, checked: valid+invalid+notfound, sampled:false};
+}
+
+// Fallback: per-prefix validation on a sample (old method), used only if the
+// ROA list is unavailable. Network errors are counted separately and excluded
+// from the coverage computation and the score.
+async function validateBySample(asn, prefixes, prog){
+  const sample = prefixes.slice(0, MAX_PREFIX_CHECK);
+  let valid=0, invalid=0, notfound=0, errors=0; const problems=[];
   for(let i=0;i<sample.length;i++){
     if(prog) prog.textContent = `RPKI validation ${i+1}/${sample.length} (${sample[i]})…`;
     try{
@@ -373,29 +501,16 @@ async function analyze(asn, prog){
       if(st === "valid") valid++;
       else if(st && st.startsWith("invalid")){ invalid++; problems.push({p:sample[i], st}); }
       else { notfound++; problems.push({p:sample[i], st:"no ROA"}); }
-    }catch(e){ notfound++; }
+    }catch(e){ errors++; }
   }
   const checked = valid+invalid+notfound;
-  const covPct = checked ? Math.round(100*valid/checked) : 0;
-
-  let score = 0;
-  score += covPct * 0.6;
-  score += (invalid===0 ? 25 : Math.max(0, 25 - invalid*10));
-  score += Math.min(15, visPct * 0.15);
-  score = Math.round(score);
-  const grade = score>=90?"A":score>=75?"B":score>=55?"C":score>=35?"D":"E";
-
-  return {
-    asn, holder, v4, v6, totalPrefixes, visPct, neighbours,
-    covPct, checked, invalid, notfound, problems, score, grade,
-    sampled: totalPrefixes > sample.length
-  };
+  return {valid, invalid, notfound, errors, problems, checked, sampled: prefixes.length > checked};
 }
 
 function renderResult(m, ageMin){
   const res = $("result");
   const gradeMsg = {
-    A:"Excellent routing hygiene. The challenge: keeping it true at 3 a.m.",
+    A:"All analyzed prefixes are covered by a valid ROA. The challenge: keeping it true at 3 a.m.",
     B:"Solid baseline. A few blind spots to fix to reach MANRS compliance.",
     C:"Average hygiene: prefixes without ROAs or inconsistencies to address.",
     D:"Real exposure to hijacks and RPKI rejections. Fix this soon.",
@@ -403,52 +518,58 @@ function renderResult(m, ageMin){
   }[m.grade];
 
   let issuesHtml = "";
-  if(m.invalid>0) issuesHtml += `<div class="issue i-bad">🔴 <b>${m.invalid} RPKI INVALID prefix(es)</b> in the sample: these routes can be dropped by validating operators (and it's the classic signature of a ROA problem). ${m.problems.filter(x=>x.st!=="no ROA").slice(0,5).map(x=>`<code>${x.p}</code> (${x.st})`).join(", ")}</div>`;
-  if(m.notfound>0) issuesHtml += `<div class="issue i-warn">🟠 <b>${m.notfound} prefix(es) without a ROA</b>: unprotected against origin hijacks. E.g.: ${m.problems.filter(x=>x.st==="no ROA").slice(0,5).map(x=>`<code>${x.p}</code>`).join(", ")}</div>`;
+  if(m.invalid>0) issuesHtml += `<div class="issue i-bad">🔴 <b>${m.invalid} RPKI INVALID prefix(es)</b>: these routes can be dropped by validating operators (and it's the classic signature of a ROA problem). ${m.problems.filter(x=>x.st!=="no ROA").slice(0,5).map(x=>`<code>${esc(x.p)}</code> (${esc(x.st)})`).join(", ")}</div>`;
+  if(m.notfound>0) issuesHtml += `<div class="issue i-warn">🟠 <b>${m.notfound} prefix(es) without a ROA</b>: unprotected against origin hijacks. E.g.: ${m.problems.filter(x=>x.st==="no ROA").slice(0,5).map(x=>`<code>${esc(x.p)}</code>`).join(", ")}</div>`;
   if(m.visPct<90){
     issuesHtml += `<div class="issue i-warn">🟠 Partial visibility: ${m.visPct}% of RIS collectors see your announcements.
       <div style="margin-top:6px;font-size:.85rem;color:var(--muted)">ℹ️ Partial visibility isn't always a defect: anycast, regional networks or deliberately low-propagation prefixes can explain it. Interpret against your topology before making it an audit finding.</div>
     </div>`;
   }
-  if(!issuesHtml) issuesHtml = `<div class="issue i-ok">🟢 No issues detected in the analyzed sample. Nice work.</div>`;
+  if(!issuesHtml) issuesHtml = `<div class="issue i-ok">🟢 No issues detected on the analyzed prefixes. Nice work.</div>`;
 
   const cachedNote = ageMin>0
     ? `<div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">⚡ Cached result (${ageMin} min ago). <a href="#" onclick="runCheck(true);return false;" style="color:var(--acc)">Refresh</a></div>`
     : "";
 
+  // Fallback mode (ROA list unavailable): only a sample was tested.
   const sampleNote = m.sampled
-    ? `<div class="issue i-warn" style="background:rgba(124,92,255,.06);border-color:rgba(124,92,255,.35)">🔎 Free test ran on a <b>sample of ${m.checked} prefix(es)</b> out of ${m.totalPrefixes} announced. Paid monitoring tests <b>all of your prefixes</b>, continuously.</div>`
+    ? `<div class="issue i-warn" style="background:rgba(124,92,255,.06);border-color:rgba(124,92,255,.35)">🔎 The full ROA list could not be fetched: the test ran on a <b>sample of ${m.checked} prefix(es)</b> out of ${m.totalPrefixes} announced. Run the analysis again in a few minutes for a full test.</div>`
+    : "";
+
+  // Network errors: unchecked prefixes, excluded from the computation (counted separately).
+  const errorNote = (m.errors > 0)
+    ? `<div class="issue i-warn" style="font-size:.85rem;color:var(--muted)">ℹ️ ${m.errors} prefix(es) could not be checked (network error): they are excluded from the coverage computation and the score.</div>`
     : "";
 
   const clean = (m.grade === "A" || m.grade === "B");
   const ctaLead = clean
     ? `<p><b>Your routing is clean — today.</b> The day one of your prefixes gets hijacked or a ROA expires, <b>nothing rings</b> on your side: you learn it from your customers, or from your auditor. RIPEstat would show it to you… if you happened to be looking at the right moment, at 3 a.m. Monitoring is having someone look for you, continuously:</p>`
-    : `<p><b>You already have blind spots above — and nobody will warn you when they get worse</b>, or when someone exploits them. A one-off snapshot only covers a sample. Here's what paid monitoring adds:</p>`;
+    : `<p><b>You already have blind spots above — and nobody will warn you when they get worse</b>, or when someone exploits them. A one-off snapshot says nothing about tomorrow. Here's what paid monitoring adds:</p>`;
 
   res.innerHTML = `
     ${cachedNote}
     <div class="scorecard">
       <div class="grade g-${m.grade}">${m.grade}</div>
       <div>
-        <b>AS${m.asn} — ${m.holder}</b><br>
+        <b>AS${m.asn} — ${esc(m.holder)}</b><br>
         <span style="color:var(--muted);font-size:.92rem">${gradeMsg}</span>
       </div>
     </div>
     <div class="kpis">
       <div class="kpi"><b>${m.totalPrefixes}</b><span>announced prefixes (v4+v6)</span></div>
-      <div class="kpi"><b>${m.covPct}%</b><span>RPKI valid (sample of ${m.checked})</span></div>
+      <div class="kpi"><b>${m.covPct}%</b><span>RPKI valid (${m.sampled ? `sample of ${m.checked}` : `${m.checked} prefixes tested`})</span></div>
       <div class="kpi"><b>${m.invalid}</b><span>INVALID prefixes</span></div>
       <div class="kpi"><b>${m.visPct}%</b><span>RIS visibility</span></div>
       <div class="kpi"><b>${m.neighbours}</b><span>observed BGP neighbors</span></div>
     </div>
-    <div class="issues">${sampleNote}${issuesHtml}</div>
+    <div class="issues">${sampleNote}${errorNote}${issuesHtml}</div>
     <div class="cta-box" id="ctaBox">
       ${ctaLead}
       <ul style="margin:0 0 12px 18px;color:var(--muted);font-size:.92rem">
-        <li><b>Full test</b>: all your prefixes validated, not a sample of ${m.checked}.</li>
         <li><b>24/7 monitoring</b>: hijack, route leak, expiring ROA, visibility loss.</li>
         <li><b>Alerts</b> within minutes (email, Slack, webhook).</li>
-        <li><b>Monthly PDF report</b> ready for your NIS2 / MANRS audits.</li>
+        <li><b>12-month history</b> and continuous RPKI hygiene.</li>
+        <li><b>Monthly PDF report</b> for your NIS2 / MANRS audits (Pro plan).</li>
       </ul>
       <button onclick="payIntent('${m.asn}')">💶 I'd pay to monitor AS${m.asn} continuously (€39/month)</button>
       <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${m.asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Just keep me posted</button>
@@ -496,7 +617,7 @@ function payIntent(asn){
     <p><b>Noted, thank you — this is the signal that helps me decide to launch the service.</b><br>
     Leave your email to be <b>contacted first</b> (and 3 months free for the first 20). I'll get back to you personally, engineer to engineer.</p>
     <div class="row">
-      <input type="email" id="payEmail" placeholder="email@your-noc.com" onkeydown="if(event.key==='Enter')submitPayLead('${asn}')">
+      <input type="email" id="payEmail" aria-label="Email" placeholder="email@your-noc.com" onkeydown="if(event.key==='Enter')submitPayLead('${asn}')">
       <button onclick="submitPayLead('${asn}')">Get contacted</button>
     </div>
     <div class="note">No spam. Your AS${asn} is already noted.</div>`;
