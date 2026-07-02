@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentinelle Routage — Your ASN's BGP/RPKI health in 30 seconds</title>
+<meta name="description" content="Free BGP/RPKI health check for your ASN: ROA coverage, invalid prefixes, BGP visibility. 24/7 monitoring and NIS2/MANRS compliance reports coming soon.">
+<link rel="canonical" href="https://sentinelle-routage.fr/en/">
+<link rel="alternate" hreflang="fr" href="https://sentinelle-routage.fr/">
+<link rel="alternate" hreflang="en" href="https://sentinelle-routage.fr/en/">
+<link rel="alternate" hreflang="x-default" href="https://sentinelle-routage.fr/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sentinelle Routage">
+<meta property="og:title" content="Sentinelle Routage — Your ASN's BGP/RPKI health in 30 seconds">
+<meta property="og:description" content="Free routing health check for your ASN (RPKI, ROA, BGP visibility), no sign-up. 24/7 monitoring and NIS2/MANRS compliance reports at launch.">
+<meta property="og:url" content="https://sentinelle-routage.fr/en/">
+<meta property="og:image" content="https://sentinelle-routage.fr/og-image-en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sentinelle Routage — Your ASN's BGP/RPKI health in 30 seconds">
+<meta name="twitter:description" content="Free routing health check for your ASN (RPKI, ROA, BGP visibility), no sign-up. 24/7 monitoring and NIS2/MANRS reports at launch.">
+<meta name="twitter:image" content="https://sentinelle-routage.fr/og-image-en.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Sentinelle Routage",
+      "url": "https://sentinelle-routage.fr/en/",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "en",
+      "description": "24/7 BGP/RPKI monitoring for your ASN with real-time alerts and NIS2/MANRS compliance reports. Free routing health check, no sign-up.",
+      "offers": [
+        {"@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EUR"},
+        {"@type": "Offer", "name": "Standard", "price": "39", "priceCurrency": "EUR"},
+        {"@type": "Offer", "name": "Pro / MSP", "price": "149", "priceCurrency": "EUR"}
+      ],
+      "provider": {"@type": "Organization", "name": "N&R Consulting", "url": "https://sentinelle-routage.fr/"}
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How is this different from BGPalerter?",
+          "acceptedAnswer": {"@type": "Answer", "text": "BGPalerter is an excellent open-source tool, but you have to host it, configure it, maintain it — and it produces no compliance reports. Sentinelle Routage is hosted, ready in 5 minutes, and generates the audit documents (NIS2, MANRS) that alerting tools don't."}
+        },
+        {
+          "@type": "Question",
+          "name": "How is this different from bgp.tools or Kentik?",
+          "acceptedAnswer": {"@type": "Answer", "text": "bgp.tools is fantastic for exploratory observability. Kentik and ThousandEyes are enterprise platforms at 4-5 figures a month. Sentinelle Routage does one thing for human-scale networks: monitoring your ASN plus the documentary evidence for your audits, at an engineer's price, not a CIO's."}
+        },
+        {
+          "@type": "Question",
+          "name": "Where does the data come from?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Public reference sources: RIPE RIS, RouteViews and the public RPKI (Routinator validators). No agent to install on your routers, no access to your network required."}
+        },
+        {
+          "@type": "Question",
+          "name": "Does NIS2 really require me to monitor my routing?",
+          "acceptedAnswer": {"@type": "Answer", "text": "NIS2 doesn't mandate RPKI word for word. But the directive and implementing regulation 2024/2690 require risk-management measures and their documentation for the digital infrastructure sector. A monthly routing security report is exactly the kind of evidence auditors ask for."}
+        },
+        {
+          "@type": "Question",
+          "name": "Who is behind Sentinelle Routage?",
+          "acceptedAnswer": {"@type": "Answer", "text": "N&R Consulting, a French company. The product is built by a senior network engineer (MPLS backbone, Juniper/Cisco/Nokia) who has been operating critical networks for 18 years, assisted by AI software engineering."}
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#111a2e; --panel2:#0e1626; --line:#1f2c47;
+    --txt:#e8eefb; --muted:#93a4c3; --acc:#4f8cff; --acc2:#7c5cff;
+    --ok:#2dd4a7; --warn:#f5b14c; --bad:#f4607a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  header{padding:18px 0;border-bottom:1px solid var(--line)}
+  .brand{font-weight:700;font-size:1.15rem;letter-spacing:.3px}
+  .brand span{color:var(--acc)}
+  .lang{float:right;color:var(--muted);font-size:.9rem;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px}
+  .lang:hover{color:var(--txt);border-color:var(--acc)}
+  .hero{padding:64px 0 32px;text-align:center}
+  .hero h1{font-size:clamp(1.6rem,4vw,2.6rem);line-height:1.2;margin-bottom:14px}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);max-width:640px;margin:0 auto 8px;font-size:1.05rem}
+  .checker{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;margin:34px auto;max-width:720px}
+  .checker h2{font-size:1.15rem;margin-bottom:4px}
+  .checker .sub{color:var(--muted);font-size:.92rem;margin-bottom:16px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  input[type=text],input[type=email]{flex:1;min-width:200px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:12px 14px;font-size:1rem;outline:none}
+  input:focus{border-color:var(--acc)}
+  button{background:linear-gradient(90deg,var(--acc),var(--acc2));color:#fff;border:none;border-radius:9px;padding:12px 22px;font-size:1rem;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.55;cursor:wait}
+  .progress{margin-top:14px;color:var(--muted);font-size:.9rem;display:none}
+  .result{display:none;margin-top:22px}
+  .scorecard{display:flex;gap:18px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .grade{font-size:2.6rem;font-weight:800;width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+  .g-A{background:rgba(45,212,167,.15);color:var(--ok);border:2px solid var(--ok)}
+  .g-B{background:rgba(45,212,167,.1);color:var(--ok);border:2px solid var(--ok)}
+  .g-C{background:rgba(245,177,76,.12);color:var(--warn);border:2px solid var(--warn)}
+  .g-D,.g-E{background:rgba(244,96,122,.12);color:var(--bad);border:2px solid var(--bad)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+  .kpi{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .kpi b{display:block;font-size:1.25rem}
+  .kpi span{color:var(--muted);font-size:.82rem}
+  .issues{margin-top:14px}
+  .issue{padding:10px 12px;border-radius:9px;margin-bottom:8px;font-size:.92rem}
+  .i-bad{background:rgba(244,96,122,.1);border:1px solid rgba(244,96,122,.4)}
+  .i-warn{background:rgba(245,177,76,.08);border:1px solid rgba(245,177,76,.35)}
+  .i-ok{background:rgba(45,212,167,.08);border:1px solid rgba(45,212,167,.35)}
+  .cta-box{margin-top:18px;padding:16px;border:1px dashed var(--acc);border-radius:10px;background:rgba(79,140,255,.06)}
+  .cta-box p{font-size:.95rem;margin-bottom:10px}
+  section{padding:44px 0}
+  section h2{text-align:center;font-size:1.5rem;margin-bottom:8px}
+  section .lead{text-align:center;color:var(--muted);max-width:620px;margin:0 auto 28px}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+  .card h3{margin-bottom:8px;font-size:1.05rem}
+  .card p,.card li{color:var(--muted);font-size:.92rem}
+  .card ul{padding-left:18px;margin-top:8px}
+  .price{font-size:1.8rem;font-weight:800;margin:6px 0}
+  .price small{font-size:.85rem;color:var(--muted);font-weight:400}
+  .tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(124,92,255,.18);color:#b4a2ff;margin-bottom:10px}
+  .hl{border-color:var(--acc)}
+  .waitlist{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:30px;max-width:640px;margin:0 auto;text-align:center}
+  .waitlist p{color:var(--muted);margin-bottom:16px;font-size:.95rem}
+  .note{font-size:.8rem;color:var(--muted);margin-top:10px}
+  .faq details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:10px}
+  .faq summary{cursor:pointer;font-weight:600}
+  .faq p{color:var(--muted);font-size:.92rem;margin-top:8px}
+  footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;color:var(--muted);font-size:.85rem}
+  .okmsg{color:var(--ok);font-weight:600;display:none;margin-top:10px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="lang" href="/" hreflang="fr">🇫🇷 FR</a><div class="brand">🛰️ Sentinelle <span>Routage</span></div></div></header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Your network's BGP/RPKI health, <em>and the report your auditor is waiting for</em></h1>
+    <p>Prefix hijacks, invalid or expired ROAs, route leaks: routing incidents get detected too late. Sentinelle Routage monitors your ASN 24/7 and generates routing security reports ready for your NIS2 and MANRS files.</p>
+  </div>
+
+  <div class="checker" id="checker">
+    <h2>🔎 Test your ASN's routing health for free</h2>
+    <div class="sub">Live RIPEstat data (RIPE NCC). No sign-up. Examples: AS3215, AS16276, AS12876…</div>
+    <div class="row">
+      <input type="text" id="asn" placeholder="Your AS number (e.g. AS199422)" onkeydown="if(event.key==='Enter')runCheck()">
+      <button id="go" onclick="runCheck()">Analyze</button>
+    </div>
+    <div class="progress" id="prog"></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <section>
+    <h2>What Sentinelle Routage will watch for you</h2>
+    <p class="lead">The test above is a snapshot. The service is the movie, 24 hours a day.</p>
+    <div class="grid3">
+      <div class="card"><h3>🚨 Real-time alerts</h3><p>Prefix hijack, route leak, unexpected announcement, visibility loss, vanished BGP neighbor. By email, Slack or webhook, within minutes.</p></div>
+      <div class="card"><h3>🔐 Continuous RPKI hygiene</h3><p>Expiring ROA, prefix announced without a ROA, invalid_length, IRR/RPKI mismatch. We warn you before your customers notice.</p></div>
+      <div class="card"><h3>📋 Compliance reports</h3><p>Monthly routing security report formatted for your NIS2 audits, your MANRS membership and your internal security reviews. The PDF your auditor files away.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Routing breaks without warning</h2>
+    <p class="lead">A hijack or a leak is silent and fast. RIPEstat will show it to you — if you happen to be looking at the right moment. Three documented cases:</p>
+    <div class="grid3">
+      <div class="card"><h3>Apr 2018 — MyEtherWallet</h3><p>An Amazon Route 53 prefix hijacked (origin AS10297). Users redirected to a fake site, <b>~$150,000 in Ether stolen</b>. The attack ran ~2 hours before anyone understood it.</p></div>
+      <div class="card"><h3>Jun 2019 — Verizon</h3><p>A route leak through a "BGP optimizer" propagated by Verizon. <b>Cloudflare, AWS and thousands of sites unreachable for ~2 hours</b>. None of the victims had done anything wrong.</p></div>
+      <div class="card"><h3>Aug 2022 — Celer cBridge</h3><p>An Amazon prefix hijacked for <b>~3 hours</b> to redirect a crypto bridge to a malicious contract. <b>~$235,000 stolen</b> before containment.</p></div>
+    </div>
+    <p class="lead" style="margin-top:18px;margin-bottom:0">None of these incidents would have been stopped by a manual check run once a quarter. All were detectable <b>within minutes</b> by continuous BGP monitoring.</p>
+  </section>
+
+  <section>
+    <h2>Launch pricing</h2>
+    <p class="lead">Self-serve, no commitment, no sales call. Launch planned for Q3 2026.</p>
+    <div class="grid3">
+      <div class="card"><span class="tag">Free</span><div class="price">€0</div>
+        <ul><li>Unlimited manual checks of your ASN</li><li>Routing health score</li><li>RPKI validation on a <b>sample</b> of prefixes</li><li>One-off snapshot (no monitoring)</li></ul></div>
+      <div class="card hl"><span class="tag">Standard</span><div class="price">€39 <small>/ month</small></div>
+        <ul><li><b>Full test: all your prefixes</b>, not a sample</li><li>1 ASN monitored 24/7</li><li>Real-time alerts (email, Slack, webhook)</li><li>12-month history</li><li>Continuous RPKI hygiene</li></ul></div>
+      <div class="card"><span class="tag">Pro / MSP</span><div class="price">€149 <small>/ month</small></div>
+        <ul><li>Up to 10 ASNs</li><li>Monthly NIS2 / MANRS audit reports (PDF)</li><li>API</li><li>Priority support from a network engineer</li></ul></div>
+    </div>
+  </section>
+
+  <section id="dp-section">
+    <div class="waitlist" style="border-color:var(--acc)">
+      <span class="tag" style="background:rgba(45,212,167,.15);color:var(--ok)">Founding program</span>
+      <h2>Become one of the 10 founding networks</h2>
+      <p>You operate an ASN, and continuous monitoring plus compliance evidence speak to you? Join the design partner program: <b>free monitoring for the whole beta</b>, your feedback steering the roadmap, and direct access to the engineer behind the tool. In exchange: some usage feedback, and (optional) permission to mention your network as a pilot.</p>
+      <form id="dp" onsubmit="return submitDP(event)">
+        <div class="row">
+          <input type="email" id="dp-email" required placeholder="email@your-noc.com">
+          <input type="text" id="dp-asn" required placeholder="Your ASN (e.g. AS201659)">
+        </div>
+        <div class="row" style="margin-top:10px">
+          <input type="text" id="dp-org" placeholder="Network / organization (optional)">
+          <button type="submit" id="dpbtn">Apply as a founding network</button>
+        </div>
+      </form>
+      <div class="okmsg" id="dpok">✅ Application received. I'll get back to you personally, engineer to engineer.</div>
+      <div class="note">10 seats. Priority to operators, hosting providers, MSPs and NIS2 entities.</div>
+    </div>
+  </section>
+
+  <section id="waitlist-section">
+    <div class="waitlist">
+      <h2>Join the waiting list</h2>
+      <p>The first 20 sign-ups get 3 months free on the Standard plan and direct input on the roadmap.</p>
+      <form id="wl" onsubmit="return submitWL(event)">
+        <div class="row">
+          <input type="email" id="email" required placeholder="email@your-noc.com">
+          <input type="text" id="wl-asn" placeholder="Your ASN (optional)">
+          <button type="submit" id="wlbtn">Sign me up</button>
+        </div>
+      </form>
+      <div class="okmsg" id="okmsg">✅ Got it. You'll hear the news before anyone else.</div>
+      <div class="note">No spam: 2-3 emails max before launch, one-click unsubscribe.</div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Frequently asked questions</h2><br>
+    <details><summary>How is this different from BGPalerter?</summary><p>BGPalerter is an excellent open-source tool, but you have to host it, configure it, maintain it — and it produces no compliance reports. Sentinelle Routage is hosted, ready in 5 minutes, and generates the audit documents (NIS2, MANRS) that alerting tools don't.</p></details>
+    <details><summary>How is this different from bgp.tools or Kentik?</summary><p>bgp.tools is fantastic for exploratory observability. Kentik and ThousandEyes are enterprise platforms at 4-5 figures a month. Sentinelle Routage does one thing for human-scale networks: monitoring YOUR ASN plus the documentary evidence for your audits, at an engineer's price, not a CIO's.</p></details>
+    <details><summary>Where does the data come from?</summary><p>Public reference sources: RIPE RIS, RouteViews and the public RPKI (Routinator validators). No agent to install on your routers, no access to your network required.</p></details>
+    <details><summary>Does NIS2 really require me to monitor my routing?</summary><p>NIS2 doesn't mandate RPKI word for word. But the directive and implementing regulation 2024/2690 require risk-management measures and their documentation for the digital infrastructure sector. A monthly routing security report is exactly the kind of evidence auditors ask for. We help you have it without spending your nights on it.</p></details>
+    <details><summary>Who is behind this?</summary><p>N&R Consulting, a French company. The product is built by a senior network engineer (MPLS backbone, Juniper/Cisco/Nokia) who has been operating critical networks for 18 years, assisted by AI software engineering. Support is answered by someone who has been on your side of the console at 3 a.m.</p></details>
+  </section>
+</div>
+
+<footer>© 2026 N&R Consulting — Sentinelle Routage · Data: RIPE NCC (RIPEstat), RouteViews · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / waiting list</a></footer>
+
+<script>
+// ===== CONFIG =====
+// Same Google Form and markers as the FR page so the validation dashboard keeps
+// counting everything. EN visits are tagged "EN" in the ASN column.
+const GFORM_ID = "1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg";
+const GFORM_ACTION = `https://docs.google.com/forms/d/e/${GFORM_ID}/formResponse`;
+const GFORM_URL = `https://docs.google.com/forms/d/e/${GFORM_ID}/viewform`;
+const ENTRY_EMAIL = "entry.621316823";
+const ENTRY_ASN = "entry.1661701622";
+const MAX_PREFIX_CHECK = 20; // free RPKI sample. Paid tests ALL prefixes.
+const RIPE_BASE = "https://sentinelle-proxy.netrconsulting.workers.dev/data/";
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 h cache per ASN
+const API_RETRIES = 3;
+const ANALYTICS_EMAIL = "analyse@sentinelle-routage.invalid";
+const VISIT_EMAIL = "visite@sentinelle-routage.invalid";
+const PAY_EMAIL = "paiement@sentinelle-routage.invalid";
+
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function api(path, attempt = 0){
+  try{
+    const r = await fetch(RIPE_BASE + path);
+    if(r.status === 429 || r.status >= 500) throw new Error("HTTP " + r.status);
+    return await r.json();
+  }catch(e){
+    if(attempt < API_RETRIES){
+      await sleep(400 * Math.pow(2, attempt) + Math.random() * 250);
+      return api(path, attempt + 1);
+    }
+    throw e;
+  }
+}
+
+function cacheGet(asn){
+  try{
+    const raw = localStorage.getItem("sr_res_AS" + asn);
+    if(!raw) return null;
+    const obj = JSON.parse(raw);
+    if(Date.now() - obj.t > CACHE_TTL_MS) return null;
+    return obj;
+  }catch(e){ return null; }
+}
+function cacheSet(asn, model){
+  try{ localStorage.setItem("sr_res_AS" + asn, JSON.stringify({t: Date.now(), model})); }
+  catch(e){ /* quota or private mode: ignore */ }
+}
+
+function parseASN(v){
+  const m = (v||"").trim().toUpperCase().replace(/^AS/,"").match(/^\d{1,10}$/);
+  return m ? m[0] : null;
+}
+
+function logAnalysis(asn){
+  try{
+    const fd = new FormData();
+    fd.append(ENTRY_EMAIL, ANALYTICS_EMAIL);
+    fd.append(ENTRY_ASN, "AS" + asn);
+    fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  }catch(e){ /* no-op */ }
+}
+
+async function runCheck(force){
+  const asn = parseASN($("asn").value);
+  const prog = $("prog"), res = $("result"), btn = $("go");
+  if(!asn){ alert("Enter a valid AS number, e.g. AS3215"); return; }
+  btn.disabled = true; res.style.display = "none"; res.innerHTML = "";
+
+  if(!force){
+    const hit = cacheGet(asn);
+    if(hit){
+      prog.style.display = "none"; btn.disabled = false; res.style.display = "block";
+      const ageMin = Math.max(1, Math.round((Date.now() - hit.t) / 60000));
+      renderResult(hit.model, ageMin);
+      return;
+    }
+  }
+
+  prog.style.display = "block"; prog.textContent = "Querying RIPEstat…";
+  try{
+    const model = await analyze(asn, prog);
+    if(model.empty){
+      prog.style.display="none"; btn.disabled=false; res.style.display="block";
+      res.innerHTML = `<div class="issue i-warn">AS${asn} (${model.holder}) currently announces no prefixes visible to RIS collectors. Double-check the AS number.</div>`;
+      return;
+    }
+    logAnalysis(asn);
+    cacheSet(asn, model);
+    prog.style.display="none"; btn.disabled=false; res.style.display="block";
+    renderResult(model, 0);
+  }catch(e){
+    prog.style.display="none"; btn.disabled=false; res.style.display="block";
+    res.innerHTML = `<div class="issue i-warn">
+      ⏳ RIPEstat is temporarily overloaded and didn't respond after several retries. It's not a problem on your end.
+      <div style="margin-top:10px"><button onclick="runCheck(true)">Try again</button></div>
+    </div>`;
+  }
+}
+
+async function analyze(asn, prog){
+  const [ov, rs] = await Promise.all([
+    api(`as-overview/data.json?resource=AS${asn}`),
+    api(`routing-status/data.json?resource=AS${asn}`)
+  ]);
+  const holder = ov?.data?.holder || "(unknown)";
+  const d = rs?.data || {};
+  const v4 = d.announced_space?.v4?.prefixes || 0;
+  const v6 = d.announced_space?.v6?.prefixes || 0;
+  const seen = d.visibility?.v4?.ris_peers_seeing || 0;
+  const total = d.visibility?.v4?.total_ris_peers || 1;
+  const neighbours = d.observed_neighbours || 0;
+  const visPct = Math.round(100*seen/total);
+  const totalPrefixes = v4 + v6;
+
+  if(totalPrefixes === 0) return {empty:true, holder};
+
+  if(prog) prog.textContent = "Fetching announced prefixes…";
+  const ap = await api(`announced-prefixes/data.json?resource=AS${asn}`);
+  const prefixes = (ap?.data?.prefixes || []).map(p => p.prefix);
+  const sample = prefixes.slice(0, MAX_PREFIX_CHECK);
+
+  let valid=0, invalid=0, notfound=0; const problems=[];
+  for(let i=0;i<sample.length;i++){
+    if(prog) prog.textContent = `RPKI validation ${i+1}/${sample.length} (${sample[i]})…`;
+    try{
+      const rv = await api(`rpki-validation/data.json?resource=AS${asn}&prefix=${encodeURIComponent(sample[i])}`);
+      const st = rv?.data?.status;
+      if(st === "valid") valid++;
+      else if(st && st.startsWith("invalid")){ invalid++; problems.push({p:sample[i], st}); }
+      else { notfound++; problems.push({p:sample[i], st:"no ROA"}); }
+    }catch(e){ notfound++; }
+  }
+  const checked = valid+invalid+notfound;
+  const covPct = checked ? Math.round(100*valid/checked) : 0;
+
+  let score = 0;
+  score += covPct * 0.6;
+  score += (invalid===0 ? 25 : Math.max(0, 25 - invalid*10));
+  score += Math.min(15, visPct * 0.15);
+  score = Math.round(score);
+  const grade = score>=90?"A":score>=75?"B":score>=55?"C":score>=35?"D":"E";
+
+  return {
+    asn, holder, v4, v6, totalPrefixes, visPct, neighbours,
+    covPct, checked, invalid, notfound, problems, score, grade,
+    sampled: totalPrefixes > sample.length
+  };
+}
+
+function renderResult(m, ageMin){
+  const res = $("result");
+  const gradeMsg = {
+    A:"Excellent routing hygiene. The challenge: keeping it true at 3 a.m.",
+    B:"Solid baseline. A few blind spots to fix to reach MANRS compliance.",
+    C:"Average hygiene: prefixes without ROAs or inconsistencies to address.",
+    D:"Real exposure to hijacks and RPKI rejections. Fix this soon.",
+    E:"Routing at risk: your prefixes can be hijacked or filtered without you knowing."
+  }[m.grade];
+
+  let issuesHtml = "";
+  if(m.invalid>0) issuesHtml += `<div class="issue i-bad">🔴 <b>${m.invalid} RPKI INVALID prefix(es)</b> in the sample: these routes can be dropped by validating operators (and it's the classic signature of a ROA problem). ${m.problems.filter(x=>x.st!=="no ROA").slice(0,5).map(x=>`<code>${x.p}</code> (${x.st})`).join(", ")}</div>`;
+  if(m.notfound>0) issuesHtml += `<div class="issue i-warn">🟠 <b>${m.notfound} prefix(es) without a ROA</b>: unprotected against origin hijacks. E.g.: ${m.problems.filter(x=>x.st==="no ROA").slice(0,5).map(x=>`<code>${x.p}</code>`).join(", ")}</div>`;
+  if(m.visPct<90){
+    issuesHtml += `<div class="issue i-warn">🟠 Partial visibility: ${m.visPct}% of RIS collectors see your announcements.
+      <div style="margin-top:6px;font-size:.85rem;color:var(--muted)">ℹ️ Partial visibility isn't always a defect: anycast, regional networks or deliberately low-propagation prefixes can explain it. Interpret against your topology before making it an audit finding.</div>
+    </div>`;
+  }
+  if(!issuesHtml) issuesHtml = `<div class="issue i-ok">🟢 No issues detected in the analyzed sample. Nice work.</div>`;
+
+  const cachedNote = ageMin>0
+    ? `<div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">⚡ Cached result (${ageMin} min ago). <a href="#" onclick="runCheck(true);return false;" style="color:var(--acc)">Refresh</a></div>`
+    : "";
+
+  const sampleNote = m.sampled
+    ? `<div class="issue i-warn" style="background:rgba(124,92,255,.06);border-color:rgba(124,92,255,.35)">🔎 Free test ran on a <b>sample of ${m.checked} prefix(es)</b> out of ${m.totalPrefixes} announced. Paid monitoring tests <b>all of your prefixes</b>, continuously.</div>`
+    : "";
+
+  const clean = (m.grade === "A" || m.grade === "B");
+  const ctaLead = clean
+    ? `<p><b>Your routing is clean — today.</b> The day one of your prefixes gets hijacked or a ROA expires, <b>nothing rings</b> on your side: you learn it from your customers, or from your auditor. RIPEstat would show it to you… if you happened to be looking at the right moment, at 3 a.m. Monitoring is having someone look for you, continuously:</p>`
+    : `<p><b>You already have blind spots above — and nobody will warn you when they get worse</b>, or when someone exploits them. A one-off snapshot only covers a sample. Here's what paid monitoring adds:</p>`;
+
+  res.innerHTML = `
+    ${cachedNote}
+    <div class="scorecard">
+      <div class="grade g-${m.grade}">${m.grade}</div>
+      <div>
+        <b>AS${m.asn} — ${m.holder}</b><br>
+        <span style="color:var(--muted);font-size:.92rem">${gradeMsg}</span>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b>${m.totalPrefixes}</b><span>announced prefixes (v4+v6)</span></div>
+      <div class="kpi"><b>${m.covPct}%</b><span>RPKI valid (sample of ${m.checked})</span></div>
+      <div class="kpi"><b>${m.invalid}</b><span>INVALID prefixes</span></div>
+      <div class="kpi"><b>${m.visPct}%</b><span>RIS visibility</span></div>
+      <div class="kpi"><b>${m.neighbours}</b><span>observed BGP neighbors</span></div>
+    </div>
+    <div class="issues">${sampleNote}${issuesHtml}</div>
+    <div class="cta-box" id="ctaBox">
+      ${ctaLead}
+      <ul style="margin:0 0 12px 18px;color:var(--muted);font-size:.92rem">
+        <li><b>Full test</b>: all your prefixes validated, not a sample of ${m.checked}.</li>
+        <li><b>24/7 monitoring</b>: hijack, route leak, expiring ROA, visibility loss.</li>
+        <li><b>Alerts</b> within minutes (email, Slack, webhook).</li>
+        <li><b>Monthly PDF report</b> ready for your NIS2 / MANRS audits.</li>
+      </ul>
+      <button onclick="payIntent('${m.asn}')">💶 I'd pay to monitor AS${m.asn} continuously (€39/month)</button>
+      <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${m.asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Just keep me posted</button>
+      <div style="margin-top:12px;font-size:.88rem;color:var(--muted)">You operate AS${m.asn}? <a href="#dp-section" onclick="document.getElementById('dp-asn').value='AS${m.asn}';document.getElementById('dp-section').scrollIntoView({behavior:'smooth'});return false;" style="color:var(--acc)">Become one of the 10 founding networks</a> — free monitoring during the beta.</div>
+    </div>`;
+}
+
+function submitWL(ev){
+  ev.preventDefault();
+  const email = $("email").value, asn = $("wl-asn").value;
+  const fd = new FormData();
+  fd.append(ENTRY_EMAIL, email);
+  fd.append(ENTRY_ASN, asn);
+  fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd})
+    .finally(()=>{ $("wl").style.display="none"; $("okmsg").style.display="block"; });
+  return false;
+}
+
+function submitDP(ev){
+  ev.preventDefault();
+  const email = ($("dp-email").value||"").trim();
+  const asn = ($("dp-asn").value||"").trim();
+  const org = ($("dp-org").value||"").trim();
+  const fd = new FormData();
+  fd.append(ENTRY_EMAIL, email);
+  fd.append(ENTRY_ASN, asn + (org ? " (" + org + ")" : "") + " — DESIGN PARTNER");
+  fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd})
+    .finally(()=>{ $("dp").style.display="none"; $("dpok").style.display="block"; });
+  return false;
+}
+
+function logPayIntent(asn){
+  try{
+    const fd = new FormData();
+    fd.append(ENTRY_EMAIL, PAY_EMAIL);
+    fd.append(ENTRY_ASN, "AS" + asn);
+    fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  }catch(e){ /* no-op */ }
+}
+function payIntent(asn){
+  logPayIntent(asn);
+  const box = document.getElementById("ctaBox");
+  if(!box) return;
+  box.innerHTML = `
+    <p><b>Noted, thank you — this is the signal that helps me decide to launch the service.</b><br>
+    Leave your email to be <b>contacted first</b> (and 3 months free for the first 20). I'll get back to you personally, engineer to engineer.</p>
+    <div class="row">
+      <input type="email" id="payEmail" placeholder="email@your-noc.com" onkeydown="if(event.key==='Enter')submitPayLead('${asn}')">
+      <button onclick="submitPayLead('${asn}')">Get contacted</button>
+    </div>
+    <div class="note">No spam. Your AS${asn} is already noted.</div>`;
+  const pe = document.getElementById("payEmail"); if(pe) setTimeout(()=>pe.focus(), 200);
+}
+
+function submitPayLead(asn){
+  const pe = document.getElementById("payEmail");
+  const email = pe ? pe.value.trim() : "";
+  if(!email || email.indexOf("@") < 1){ if(pe){ pe.focus(); pe.style.borderColor = "var(--bad)"; } return; }
+  const fd = new FormData();
+  fd.append(ENTRY_EMAIL, email);
+  fd.append(ENTRY_ASN, "AS" + asn + " — INTENTION PAYER");
+  fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  const box = document.getElementById("ctaBox");
+  if(box) box.innerHTML = "<p>✅ <b>Perfect, noted.</b> You'll be contacted first at launch (3 months free for the first 20). Thanks for moving the project forward.</p>";
+}
+
+// One "visit" line per browsing session, tagged "EN" in the ASN column so
+// English traffic can be told apart on the dashboard (same email marker, so
+// existing visit counting keeps working).
+function logVisit(){
+  try{
+    if(sessionStorage.getItem("sr_visit")) return;
+    sessionStorage.setItem("sr_visit","1");
+    const fd = new FormData();
+    fd.append(ENTRY_EMAIL, VISIT_EMAIL);
+    fd.append(ENTRY_ASN, "EN");
+    fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  }catch(e){ /* no-op */ }
+}
+logVisit();
+</script>
+</body>
+</html>
