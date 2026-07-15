@@ -184,7 +184,7 @@
 
   <section>
     <h2>Tarifs au lancement</h2>
-    <p class="lead">Self-serve, sans engagement, sans appel commercial. Lancement prévu T3 2026.</p>
+    <p class="lead">Self-serve, sans engagement, sans appel commercial. Paiement en ligne ouvert.</p><p style="margin:14px 0 0"><a href="https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;margin:4px 6px 4px 0">S'abonner — Standard 39 €/mois · 3 mois offerts aux 20 premiers</a><a href="https://buy.stripe.com/14AcMY6A26Eg36E3ZN87K01" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;border:1px solid var(--acc);color:var(--acc);text-decoration:none;font-weight:700;margin:4px 0">Pro / MSP — 149 €/mois</a></p><p style="font-size:.92rem;color:var(--muted);margin-top:10px">Recommandé par <a href="https://www.bortzmeyer.org/sentinelle-routage.html" target="_blank" rel="noopener">Stéphane Bortzmeyer — article du 14 juillet 2026</a>.</p>
     <div class="grid3">
       <div class="card"><span class="tag">Gratuit</span><div class="price">0 €</div>
         <ul><li>Check manuel illimité de votre ASN</li><li>Score de santé routage</li><li>Validation RPKI de <b>tous vos préfixes</b> annoncés</li><li>Photo ponctuelle (pas de surveillance)</li></ul></div>
@@ -241,7 +241,7 @@
   </section>
 </div>
 
-<footer>© 2026 N&R Consulting — Sentinelle Routage · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / liste d'attente</a><div style="margin-top:10px;font-size:.78rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5">Ce service utilise les données du <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/" style="color:var(--muted);text-decoration:underline">Routing Information Service (RIS)</a> du RIPE NCC, le flux temps réel <a href="https://ris-live.ripe.net/" style="color:var(--muted);text-decoration:underline">RIS Live</a> et l'API <a href="https://stat.ripe.net/" style="color:var(--muted);text-decoration:underline">RIPEstat</a>.<br>This product includes data from the RIPE NCC Routing Information Service (RIS), © RIPE NCC, used in accordance with the RIPE NCC terms and conditions.</div></footer>
+<footer>© 2026 N&R Consulting — Sentinelle Routage · <a href="https://sentinelle-backend-production.up.railway.app/status" target="_blank" rel="noopener">État du service (temps réel)</a> · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / liste d'attente</a><div style="margin-top:10px;font-size:.78rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5">Ce service utilise les données du <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/" style="color:var(--muted);text-decoration:underline">Routing Information Service (RIS)</a> du RIPE NCC, le flux temps réel <a href="https://ris-live.ripe.net/" style="color:var(--muted);text-decoration:underline">RIS Live</a> et l'API <a href="https://stat.ripe.net/" style="color:var(--muted);text-decoration:underline">RIPEstat</a>.<br>This product includes data from the RIPE NCC Routing Information Service (RIS), © RIPE NCC, used in accordance with the RIPE NCC terms and conditions.</div></footer>
 
 <script>
 // ===== CONFIG =====
@@ -626,11 +626,11 @@ function logPayIntent(asn){
 }
 // Au clic : logue l'intention immédiatement, puis demande l'email en place.
 function payIntent(asn){
-  logPayIntent(asn);
+  logPayIntent(asn); try{ window.open("https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00", "_blank", "noopener"); }catch(e){}
   const box = document.getElementById("ctaBox");
   if(!box) return;
   box.innerHTML = `
-    <p><b>Noté, merci — c'est le signal qui m'aide à décider de lancer le service.</b><br>
+    <p><b>La page d'abonnement s'est ouverte dans un nouvel onglet (<a href="https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00" target="_blank" rel="noopener">sinon cliquez ici</a>) — 3 mois offerts, sans engagement.</b><br>
     Laissez votre email pour être <b>recontacté en priorité</b> (et 3 mois offerts pour les 20 premiers). Je reviens vers vous personnellement, d'ingénieur à ingénieur.</p>
     <div class="row">
       <input type="email" id="payEmail" aria-label="Email" placeholder="email@votre-noc.fr" onkeydown="if(event.key==='Enter')submitPayLead('${asn}')">
