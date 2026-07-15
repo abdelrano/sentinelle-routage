@@ -185,7 +185,7 @@
 
   <section>
     <h2>Launch pricing</h2>
-    <p class="lead">Self-serve, no commitment, no sales call. Launch planned for Q3 2026.</p>
+    <p class="lead">Self-serve, no commitment, no sales call. Online payment is open.</p><p style="margin:14px 0 0"><a href="https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;margin:4px 6px 4px 0">Subscribe — Standard €39/month · 3 months free for the first 20</a><a href="https://buy.stripe.com/14AcMY6A26Eg36E3ZN87K01" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;border:1px solid var(--acc);color:var(--acc);text-decoration:none;font-weight:700;margin:4px 0">Pro / MSP — €149/month</a></p><p style="font-size:.92rem;color:var(--muted);margin-top:10px">Recommended by <a href="https://www.bortzmeyer.org/sentinelle-routage.html" target="_blank" rel="noopener">Stéphane Bortzmeyer — article, 14 July 2026 (in French)</a>.</p>
     <div class="grid3">
       <div class="card"><span class="tag">Free</span><div class="price">€0</div>
         <ul><li>Unlimited manual checks of your ASN</li><li>Routing health score</li><li>RPKI validation of <b>all your announced prefixes</b></li><li>One-off snapshot (no monitoring)</li></ul></div>
@@ -242,7 +242,7 @@
   </section>
 </div>
 
-<footer>© 2026 N&R Consulting — Sentinelle Routage · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / waiting list</a><div style="margin-top:10px;font-size:.78rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5">This service uses data from the RIPE NCC <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/" style="color:var(--muted);text-decoration:underline">Routing Information Service (RIS)</a>, the <a href="https://ris-live.ripe.net/" style="color:var(--muted);text-decoration:underline">RIS Live</a> real-time feed and the <a href="https://stat.ripe.net/" style="color:var(--muted);text-decoration:underline">RIPEstat</a> API.<br>This product includes data from the RIPE NCC Routing Information Service (RIS), © RIPE NCC, used in accordance with the RIPE NCC terms and conditions.</div></footer>
+<footer>© 2026 N&R Consulting — Sentinelle Routage · <a href="https://sentinelle-backend-production.up.railway.app/status" target="_blank" rel="noopener">Service status (live)</a> · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / waiting list</a><div style="margin-top:10px;font-size:.78rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5">This service uses data from the RIPE NCC <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/" style="color:var(--muted);text-decoration:underline">Routing Information Service (RIS)</a>, the <a href="https://ris-live.ripe.net/" style="color:var(--muted);text-decoration:underline">RIS Live</a> real-time feed and the <a href="https://stat.ripe.net/" style="color:var(--muted);text-decoration:underline">RIPEstat</a> API.<br>This product includes data from the RIPE NCC Routing Information Service (RIS), © RIPE NCC, used in accordance with the RIPE NCC terms and conditions.</div></footer>
 
 <script>
 // ===== CONFIG =====
@@ -571,7 +571,7 @@ function renderResult(m, ageMin){
         <li><b>12-month history</b> and continuous RPKI hygiene.</li>
         <li><b>Monthly PDF report</b> for your NIS2 / MANRS audits (Pro plan).</li>
       </ul>
-      <button onclick="payIntent('${m.asn}')">💶 I'd pay to monitor AS${m.asn} continuously (€39/month)</button>
+      <button onclick="payIntent('${m.asn}')">💶 Monitor AS${m.asn} continuously — €39/month, 3 months free</button>
       <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${m.asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Just keep me posted</button>
       <div style="margin-top:12px;font-size:.88rem;color:var(--muted)">You operate AS${m.asn}? <a href="#dp-section" onclick="document.getElementById('dp-asn').value='AS${m.asn}';document.getElementById('dp-section').scrollIntoView({behavior:'smooth'});return false;" style="color:var(--acc)">Become one of the 10 founding networks</a> — free monitoring during the beta.</div>
     </div>`;
@@ -610,11 +610,11 @@ function logPayIntent(asn){
   }catch(e){ /* no-op */ }
 }
 function payIntent(asn){
-  logPayIntent(asn);
+  logPayIntent(asn); try{ window.open("https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00", "_blank", "noopener"); }catch(e){}
   const box = document.getElementById("ctaBox");
   if(!box) return;
   box.innerHTML = `
-    <p><b>Noted, thank you — this is the signal that helps me decide to launch the service.</b><br>
+    <p><b>The subscription page opened in a new tab (<a href="https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00" target="_blank" rel="noopener">or click here</a>) — 3 months free, no commitment.</b><br>
     Leave your email to be <b>contacted first</b> (and 3 months free for the first 20). I'll get back to you personally, engineer to engineer.</p>
     <div class="row">
       <input type="email" id="payEmail" aria-label="Email" placeholder="email@your-noc.com" onkeydown="if(event.key==='Enter')submitPayLead('${asn}')">
