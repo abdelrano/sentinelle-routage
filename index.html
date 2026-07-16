@@ -287,7 +287,7 @@ async function api(path, attempt = 0){
 // l'essentiel de la charge.
 function cacheGet(asn){
   try{
-    const raw = localStorage.getItem("sr_res2_AS" + asn);
+    const raw = localStorage.getItem("sr_res3_AS" + asn);
     if(!raw) return null;
     const obj = JSON.parse(raw);
     if(Date.now() - obj.t > CACHE_TTL_MS) return null;
@@ -295,7 +295,7 @@ function cacheGet(asn){
   }catch(e){ return null; }
 }
 function cacheSet(asn, model){
-  try{ localStorage.setItem("sr_res2_AS" + asn, JSON.stringify({t: Date.now(), model})); }
+  try{ localStorage.setItem("sr_res3_AS" + asn, JSON.stringify({t: Date.now(), model})); }
   catch(e){ /* quota ou mode privé : on ignore */ }
 }
 
@@ -434,6 +434,7 @@ async function analyze(asn, prog){
   if(rpki.checked === 0 && rpki.errors > 0) throw new Error("validation RPKI impossible");
 
   const {valid, invalid, notfound, errors, problems, checked, sampled} = rpki;
+  const lax = rpki.lax || 0, laxExamples = rpki.laxExamples || [];
   const covPct = checked ? Math.round(100*valid/checked) : 0;
 
   let score = 0;
@@ -447,6 +448,7 @@ async function analyze(asn, prog){
   return {
     asn, holder, v4, v6, totalPrefixes, visPct, neighbours,
     covPct, checked, invalid, notfound, errors, problems, score, grade,
+    lax, laxExamples, // préfixes valides mais couverts par un ROA trop permissif (maxLength > longueur annoncée)
     sampled // true = seul un échantillon a pu être testé (mode repli)
   };
 }
@@ -465,18 +467,25 @@ async function validateWithRoas(asn, prefixes, prog){
     return c;
   });
 
-  let valid=0, invalid=0, notfound=0; const problems=[]; const uncovered=[];
+  let valid=0, invalid=0, notfound=0, lax=0; const problems=[]; const uncovered=[]; const laxExamples=[];
   const pushProblem = (p, st) => { if(problems.length < 30) problems.push({p, st}); };
   if(prog) prog.textContent = `Validation RPKI de ${prefixes.length} préfixes…`;
   for(const p of prefixes){
     const ann = parseCidr(p);
-    let covered=false, lenOk=false;
+    // maxAllowed = maxLength la plus permissive parmi les ROA couvrant ce préfixe :
+    // si elle dépasse la longueur annoncée, un sous-préfixe forgé (origine usurpée)
+    // serait RPKI-VALID et gagnerait au longest-prefix match (ROA trop laxiste, cf. RFC 9319).
+    let covered=false, lenOk=false, maxAllowed=-1;
     for(const roa of roas){
       if(!cidrContains(roa, ann)) continue;
       covered = true;
-      if(ann.len <= roa.maxLength){ lenOk = true; break; }
+      if(roa.maxLength > maxAllowed) maxAllowed = roa.maxLength;
+      if(ann.len <= roa.maxLength) lenOk = true;
     }
-    if(lenOk) valid++;
+    if(lenOk){
+      valid++;
+      if(maxAllowed > ann.len){ lax++; if(laxExamples.length < 5) laxExamples.push({p, max: maxAllowed}); }
+    }
     else if(covered){ invalid++; pushProblem(p, "invalid,more-specific"); }
     else uncovered.push(p);
   }
@@ -496,7 +505,7 @@ async function validateWithRoas(asn, prefixes, prog){
   }
   for(const p of uncovered.slice(MAX_PREFIX_CHECK)){ notfound++; pushProblem(p, "sans ROA"); }
 
-  return {valid, invalid, notfound, errors:0, problems, checked: valid+invalid+notfound, sampled:false};
+  return {valid, invalid, notfound, errors:0, problems, checked: valid+invalid+notfound, sampled:false, lax, laxExamples};
 }
 
 // Repli : validation préfixe par préfixe sur un échantillon (ancienne méthode),
@@ -516,7 +525,8 @@ async function validateBySample(asn, prefixes, prog){
     }catch(e){ errors++; }
   }
   const checked = valid+invalid+notfound;
-  return {valid, invalid, notfound, errors, problems, checked, sampled: prefixes.length > checked};
+  // NB : la détection des ROA laxistes nécessite la liste des ROA, indisponible en mode repli.
+  return {valid, invalid, notfound, errors, problems, checked, sampled: prefixes.length > checked, lax:0, laxExamples:[]};
 }
 
 // Construit l'affichage à partir du modèle. ageMin>0 = résultat servi du cache.
@@ -533,6 +543,9 @@ function renderResult(m, ageMin){
   let issuesHtml = "";
   if(m.invalid>0) issuesHtml += `<div class="issue i-bad">🔴 <b>${m.invalid} préfixe(s) RPKI INVALID</b> : ces routes peuvent être rejetées par les opérateurs qui valident (et c'est la signature classique d'un souci de ROA). ${m.problems.filter(x=>x.st!=="sans ROA").slice(0,5).map(x=>`<code>${esc(x.p)}</code> (${esc(x.st)})`).join(", ")}</div>`;
   if(m.notfound>0) issuesHtml += `<div class="issue i-warn">🟠 <b>${m.notfound} préfixe(s) sans ROA</b> : non protégés contre le hijack d'origine. Ex. : ${m.problems.filter(x=>x.st==="sans ROA").slice(0,5).map(x=>`<code>${esc(x.p)}</code>`).join(", ")}</div>`;
+  if((m.lax||0)>0) issuesHtml += `<div class="issue i-warn">🟡 <b>${m.lax} préfixe(s) couverts par un ROA trop permissif</b> : la maxLength du ROA autorise des annonces plus spécifiques que ce que vous annoncez (${(m.laxExamples||[]).slice(0,5).map(x=>`<code>${esc(x.p)}</code> → ROA jusqu'au /${esc(x.max)}`).join(", ")}). En cas d'usurpation de votre numéro d'AS, un sous-préfixe forgé serait <b>RPKI-VALID</b> et gagnerait au longest-prefix match (<i>forged-origin sub-prefix hijack</i>). Recommandation RFC 9319 : maxLength = longueur réellement annoncée.
+      <div style="margin-top:6px;font-size:.85rem;color:var(--muted)">ℹ️ Signalé à titre préventif : sans impact sur la note. Si vous utilisez ces longueurs pour de l'ingénierie de trafic ou un plan de repli, c'est un choix assumé, pas une erreur.</div>
+    </div>`;
   if(m.visPct<90){
     issuesHtml += `<div class="issue i-warn">🟠 Visibilité partielle : ${m.visPct} % des collecteurs RIS voient vos annonces.
       <div style="margin-top:6px;font-size:.85rem;color:var(--muted)">ℹ️ Une visibilité partielle n'est pas toujours un défaut : anycast, réseau régional ou préfixes volontairement peu propagés peuvent l'expliquer. À interpréter selon votre topologie avant d'en faire un point d'audit.</div>
