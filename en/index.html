@@ -331,9 +331,26 @@ async function runCheck(force){
     }
   }
 
-  prog.style.display = "block"; prog.textContent = "Running full analysis (RIS, RPKI, IRR)… An ASN never analyzed before can take up to ~20 s.";
+  // Progress feedback during the single API call (5-20 s for an ASN never
+  // analyzed before): indicative steps + animated dots to make the wait readable.
+  const PROG_STEPS = [
+    "Analysis in progress: querying RIS collectors (up to ~20 s for an ASN never analyzed before)",
+    "RPKI validation of your prefixes (Routinator instance)",
+    "Checking IRR route objects (RADB)",
+    "Looking up the abuse contact (RIPE Database)",
+    "Compiling the result, a few more seconds"
+  ];
+  let progStep = 0, progTicks = 0;
+  const paintProg = () => { prog.textContent = PROG_STEPS[progStep] + ".".repeat(1 + progTicks % 3); };
+  const progTimer = setInterval(() => {
+    progTicks++;
+    if(progTicks % 8 === 0 && progStep < PROG_STEPS.length - 1) progStep++;
+    paintProg();
+  }, 450);
+  prog.style.display = "block"; paintProg();
   try{
     const model = await analyze(asn);
+    clearInterval(progTimer);
     if(model.empty){
       prog.style.display="none"; btn.disabled=false; res.style.display="block";
       res.innerHTML = `<div class="issue i-warn">AS${asn} currently announces no prefixes visible to RIS collectors. Double-check the AS number.</div>`;
@@ -344,6 +361,7 @@ async function runCheck(force){
     prog.style.display="none"; btn.disabled=false; res.style.display="block";
     renderResult(model, 0);
   }catch(e){
+    clearInterval(progTimer);
     prog.style.display="none"; btn.disabled=false; res.style.display="block";
     res.innerHTML = (e && e.code === 429)
       ? `<div class="issue i-warn">
