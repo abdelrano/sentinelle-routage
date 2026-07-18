@@ -57,7 +57,7 @@
         {
           "@type": "Question",
           "name": "D'où viennent les données ?",
-          "acceptedAnswer": {"@type": "Answer", "text": "Les données viennent de RIPEstat (RIS), le service de données public du RIPE NCC, validation RPKI incluse. Aucun agent à installer sur vos routeurs, aucun accès à votre réseau requis."}
+          "acceptedAnswer": {"@type": "Answer", "text": "Les données de routage viennent du Routing Information Service (RIS) du RIPE NCC. La validation RPKI est réalisée par notre propre instance Routinator, les objets route IRR via RADB, et les contacts abuse via la base de données RIPE. Aucun agent à installer sur vos routeurs, aucun accès à votre réseau requis."}
         },
         {
           "@type": "Question",
@@ -152,7 +152,7 @@
 
   <div class="checker" id="checker">
     <h2>🔎 Testez gratuitement la santé routage de votre ASN</h2>
-    <div class="sub">Données live RIPEstat (RIPE NCC). Aucune inscription. Exemple : AS3215, AS16276, AS12876…</div>
+    <div class="sub">Données live : RIPE NCC RIS · validation RPKI par Routinator · IRR via RADB. Aucune inscription. Exemple : AS3215, AS16276, AS12876…</div>
     <div class="row">
       <input type="text" id="asn" aria-label="Numéro d'AS" placeholder="Votre numéro d'AS (ex. AS199422)" onkeydown="if(event.key==='Enter')runCheck()">
       <button id="go" onclick="runCheck()">Analyser</button>
@@ -236,13 +236,13 @@
     <h2>Questions fréquentes</h2><br>
     <details><summary>En quoi est-ce différent de BGPalerter ?</summary><p>BGPalerter est un excellent outil open source, mais il faut l'héberger, le configurer, le maintenir et il ne produit aucun rapport de conformité. Sentinelle Routage est hébergé, prêt en 5 minutes, et génère les documents d'audit (NIS2, MANRS) que les outils d'alerting ne font pas.</p></details>
     <details><summary>En quoi est-ce différent de bgp.tools ou Kentik ?</summary><p>bgp.tools est formidable pour l'observabilité exploratoire. Kentik et ThousandEyes sont des plateformes enterprise à 4-5 chiffres par mois. Sentinelle Routage fait une seule chose pour les réseaux de taille humaine : la surveillance de VOTRE ASN plus la preuve documentaire pour vos audits, à un prix d'ingénieur, pas de DSI.</p></details>
-    <details><summary>D'où viennent les données ?</summary><p>Les données viennent de RIPEstat (RIS), le service de données public du RIPE NCC, validation RPKI incluse. Aucun agent à installer sur vos routeurs, aucun accès à votre réseau requis.</p></details>
+    <details><summary>D'où viennent les données ?</summary><p>Les données de routage viennent du Routing Information Service (RIS) du RIPE NCC. La validation RPKI est réalisée par notre propre instance Routinator, les objets route IRR via RADB, et les contacts abuse via la base de données RIPE. Aucun agent à installer sur vos routeurs, aucun accès à votre réseau requis.</p></details>
     <details><summary>NIS2 m'oblige-t-il vraiment à surveiller mon routage ?</summary><p>NIS2 n'impose pas RPKI mot pour mot. Mais la directive et le règlement d'exécution 2024/2690 exigent des mesures de gestion des risques et leur documentation pour le secteur des infrastructures numériques. Un rapport mensuel de sécurité du routage est exactement le type de preuve que les auditeurs demandent. Nous vous aidons à l'avoir sans y passer vos nuits.</p></details>
     <details><summary>Qui est derrière ?</summary><p>N&R Consulting, société française. Le produit est conçu par un ingénieur réseau senior (backbone MPLS, Juniper/Cisco/Nokia) qui supervise des réseaux critiques depuis 18 ans, assisté par une ingénierie logicielle IA. Le support est répondu par quelqu'un qui a déjà été de votre côté de la console, à 3 h du matin.</p></details>
   </section>
 </div>
 
-<footer>© 2026 N&R Consulting — Sentinelle Routage · <a href="https://sentinelle-backend-production.up.railway.app/status" target="_blank" rel="noopener">État du service (temps réel)</a> · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / liste d'attente</a><div style="margin-top:10px;font-size:.78rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5">Ce service utilise les données du <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/" style="color:var(--muted);text-decoration:underline">Routing Information Service (RIS)</a> du RIPE NCC, le flux temps réel <a href="https://ris-live.ripe.net/" style="color:var(--muted);text-decoration:underline">RIS Live</a> et l'API <a href="https://stat.ripe.net/" style="color:var(--muted);text-decoration:underline">RIPEstat</a>.<br>This product includes data from the RIPE NCC Routing Information Service (RIS), © RIPE NCC, used in accordance with the RIPE NCC terms and conditions.</div></footer>
+<footer>© 2026 N&R Consulting — Sentinelle Routage · <a href="https://sentinelle-backend-production.up.railway.app/status" target="_blank" rel="noopener">État du service (temps réel)</a> · <a href="https://docs.google.com/forms/d/e/1FAIpQLSeUpajC4w9eyxEzv9LLEJ_81DLJH-fBHIw4gKWJMfYyxEuhYg/viewform" style="color:var(--muted)">Contact / liste d'attente</a><div style="margin-top:10px;font-size:.78rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5">Ce service utilise les données du <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/" style="color:var(--muted);text-decoration:underline">Routing Information Service (RIS)</a> du RIPE NCC et le flux temps réel <a href="https://ris-live.ripe.net/" style="color:var(--muted);text-decoration:underline">RIS Live</a>. La validation RPKI est réalisée par une instance locale <a href="https://nlnetlabs.nl/projects/routing/routinator/" style="color:var(--muted);text-decoration:underline">Routinator</a>, les objets route IRR via RADB.<br>This product includes data from the RIPE NCC Routing Information Service (RIS), © RIPE NCC, used in accordance with the RIPE NCC terms and conditions.</div></footer>
 
 <script>
 // ===== CONFIG =====
@@ -251,11 +251,10 @@ const GFORM_ACTION = `https://docs.google.com/forms/d/e/${GFORM_ID}/formResponse
 const GFORM_URL = `https://docs.google.com/forms/d/e/${GFORM_ID}/viewform`;
 const ENTRY_EMAIL = "entry.621316823";
 const ENTRY_ASN = "entry.1661701622";
-const MAX_PREFIX_CHECK = 20; // taille de l'échantillon en mode repli, et plafond de vérifications unitaires
-// Proxy Cloudflare (cache anti rate-limit) devant l'API RIPEstat.
-const RIPE_BASE = "https://sentinelle-proxy.netrconsulting.workers.dev/data/";
+// API Sentinelle (backend) : analyse complète en UN appel — préfixes annoncés (RIS),
+// validation RPKI (instance Routinator locale), objets route IRR (RADB), abuse (RIPE DB).
+const API_BASE = "https://sentinelle-backend-production.up.railway.app/api/check/";
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 h : durée de validité du résultat mis en cache par ASN
-const API_RETRIES = 3;              // nb de tentatives avant d'abandonner (résilience rate-limit)
 // Marqueurs analytics : ces adresses .invalid distinguent, dans le même Google Form,
 // les lignes de mesure (analyse / visite / intention de payer) des vraies inscriptions.
 const ANALYTICS_EMAIL = "analyse@sentinelle-routage.invalid";
@@ -263,32 +262,24 @@ const VISIT_EMAIL = "visite@sentinelle-routage.invalid";
 const PAY_EMAIL = "paiement@sentinelle-routage.invalid";
 
 const $ = id => document.getElementById(id);
-const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-// Appel RIPEstat résilient : retente avec backoff exponentiel + jitter sur
-// rate-limit (429) ou erreur serveur (5xx) ou panne réseau. C'est ce qui évite
-// d'afficher une erreur au visiteur quand RIPEstat nous bride pendant un pic.
-async function api(path, attempt = 0){
-  try{
-    const r = await fetch(RIPE_BASE + path);
-    if(r.status === 429 || r.status >= 500) throw new Error("HTTP " + r.status);
-    return await r.json();
-  }catch(e){
-    if(attempt < API_RETRIES){
-      await sleep(400 * Math.pow(2, attempt) + Math.random() * 250);
-      return api(path, attempt + 1);
-    }
-    throw e;
-  }
+// Appel unique à l'API Sentinelle. Le backend gère lui-même le cache (1 h par ASN)
+// et la résilience côté sources : pas de retry côté navigateur. 429 = limite de
+// 10 analyses/min/IP ; toute autre erreur = sources momentanément indisponibles.
+async function apiCheck(asn){
+  const r = await fetch(API_BASE + "AS" + asn);
+  if(r.status === 429){ const e = new Error("rate-limit"); e.code = 429; throw e; }
+  if(!r.ok){ const e = new Error("HTTP " + r.status); e.code = r.status; throw e; }
+  return await r.json();
 }
 
 // ---- Cache résultat par ASN (localStorage) ----
 // Une analyse déjà faite récemment est resservie instantanément, sans retaper
-// RIPEstat. Pendant un pic où beaucoup testent les mêmes gros ASN, ça coupe
-// l'essentiel de la charge.
+// l'API. S'ajoute au cache serveur (1 h par ASN) du backend. Pendant un pic où
+// beaucoup testent les mêmes gros ASN, ça coupe l'essentiel de la charge.
 function cacheGet(asn){
   try{
-    const raw = localStorage.getItem("sr_res3_AS" + asn);
+    const raw = localStorage.getItem("sr_res4_AS" + asn);
     if(!raw) return null;
     const obj = JSON.parse(raw);
     if(Date.now() - obj.t > CACHE_TTL_MS) return null;
@@ -296,7 +287,7 @@ function cacheGet(asn){
   }catch(e){ return null; }
 }
 function cacheSet(asn, model){
-  try{ localStorage.setItem("sr_res3_AS" + asn, JSON.stringify({t: Date.now(), model})); }
+  try{ localStorage.setItem("sr_res4_AS" + asn, JSON.stringify({t: Date.now(), model})); }
   catch(e){ /* quota ou mode privé : on ignore */ }
 }
 
@@ -312,33 +303,6 @@ function esc(s){
   const d = document.createElement("div");
   d.textContent = s == null ? "" : String(s);
   return d.innerHTML;
-}
-
-// ---- Comparaison CIDR (v4 et v6) pour croiser préfixes annoncés et ROA ----
-function ipToBigInt(ip){
-  if(ip.indexOf(":") === -1){
-    return ip.split(".").reduce((acc,o)=>(acc<<8n)+BigInt(parseInt(o,10)||0), 0n);
-  }
-  // IPv6 : expansion de "::" puis lecture de 8 groupes de 16 bits
-  const parts = ip.split("::");
-  const head = parts[0] ? parts[0].split(":") : [];
-  const tail = parts.length > 1 && parts[1] ? parts[1].split(":") : [];
-  const groups = parts.length > 1
-    ? head.concat(new Array(Math.max(0, 8 - head.length - tail.length)).fill("0"), tail)
-    : head;
-  return groups.reduce((acc,g)=>(acc<<16n)+BigInt(parseInt(g||"0",16)||0), 0n);
-}
-function parseCidr(c){
-  const i = c.lastIndexOf("/");
-  const ip = c.slice(0, i);
-  const v6 = ip.indexOf(":") !== -1;
-  return { v6, len: parseInt(c.slice(i+1), 10), val: ipToBigInt(ip), size: v6 ? 128 : 32 };
-}
-// Le préfixe annoncé `ann` est-il contenu dans le préfixe du ROA `roa` ?
-function cidrContains(roa, ann){
-  if(roa.v6 !== ann.v6 || ann.len < roa.len) return false;
-  const shift = BigInt(roa.size - roa.len);
-  return (roa.val >> shift) === (ann.val >> shift);
 }
 
 // Logue une analyse (ASN) dans le Google Form, marquée par ANALYTICS_EMAIL.
@@ -357,10 +321,14 @@ function logAnalysis(asn){
 async function runCheck(force){
   const asn = parseASN($("asn").value);
   const prog = $("prog"), res = $("result"), btn = $("go");
-  if(!asn){ alert("Entrez un numéro d'AS valide, ex. AS3215"); return; }
+  if(!asn){
+    res.style.display = "block";
+    res.innerHTML = `<div class="issue i-warn">Entrez un numéro d'AS valide, ex. AS3215.</div>`;
+    return;
+  }
   btn.disabled = true; res.style.display = "none"; res.innerHTML = "";
 
-  // Cache : si on a une analyse fraîche de cet ASN, on la ressert sans taper RIPEstat.
+  // Cache : si on a une analyse fraîche de cet ASN, on la ressert sans taper l'API.
   if(!force){
     const hit = cacheGet(asn);
     if(hit){
@@ -371,12 +339,12 @@ async function runCheck(force){
     }
   }
 
-  prog.style.display = "block"; prog.textContent = "Interrogation de RIPEstat…";
+  prog.style.display = "block"; prog.textContent = "Analyse complète en cours (RIS, RPKI, IRR)… Un ASN jamais analysé peut prendre jusqu'à ~20 s.";
   try{
-    const model = await analyze(asn, prog);
+    const model = await analyze(asn);
     if(model.empty){
       prog.style.display="none"; btn.disabled=false; res.style.display="block";
-      res.innerHTML = `<div class="issue i-warn">AS${asn} (${esc(model.holder)}) n'annonce actuellement aucun préfixe visible par les collecteurs RIS. Vérifiez le numéro d'AS.</div>`;
+      res.innerHTML = `<div class="issue i-warn">AS${asn} n'annonce actuellement aucun préfixe visible par les collecteurs RIS. Vérifiez le numéro d'AS.</div>`;
       return;
     }
     logAnalysis(asn);       // journalise l'analyse de cet ASN
@@ -385,57 +353,43 @@ async function runCheck(force){
     renderResult(model, 0);
   }catch(e){
     prog.style.display="none"; btn.disabled=false; res.style.display="block";
-    res.innerHTML = `<div class="issue i-warn">
-      ⏳ RIPEstat est momentanément surchargé et n'a pas répondu après plusieurs tentatives. Ce n'est pas un problème de votre côté.
+    res.innerHTML = (e && e.code === 429)
+      ? `<div class="issue i-warn">
+      ⏳ Limite atteinte : au maximum 10 analyses par minute. Réessayez dans une minute.
+      <div style="margin-top:10px"><button onclick="runCheck(true)">Réessayer</button></div>
+    </div>`
+      : `<div class="issue i-warn">
+      ⏳ Les sources de données sont momentanément indisponibles ou l'ASN n'a pas pu être analysé. Ce n'est pas un problème de votre côté.
       <div style="margin-top:10px"><button onclick="runCheck(true)">Réessayer</button></div>
     </div>`;
   }
 }
 
-// Interroge RIPEstat et calcule le modèle de résultat (sans aucun rendu DOM).
-async function analyze(asn, prog){
-  const [ov, rs] = await Promise.all([
-    api(`as-overview/data.json?resource=AS${asn}`),
-    api(`routing-status/data.json?resource=AS${asn}`)
-  ]);
-  const holder = ov?.data?.holder || "(inconnu)";
-  const d = rs?.data || {};
-  const v4 = d.announced_space?.v4?.prefixes || 0;
-  const v6 = d.announced_space?.v6?.prefixes || 0;
-  const neighbours = d.observed_neighbours || 0;
-  const totalPrefixes = v4 + v6;
+// Interroge l'API Sentinelle et construit le modèle de résultat (sans aucun rendu DOM).
+// La grille de notation est STRICTEMENT identique à la version RIPEstat.
+async function analyze(asn){
+  const data = await apiCheck(asn);
+  const s = data.summary || {};
+  const totalPrefixes = s.total || 0;
+  if(totalPrefixes === 0) return {empty:true};
 
-  // Visibilité RIS : moyenne v4/v6 pondérée par le nombre de préfixes de chaque
-  // famille (un AS IPv6-only ne doit pas sortir à 0 %).
-  const sV4 = d.visibility?.v4?.ris_peers_seeing || 0, tV4 = d.visibility?.v4?.total_ris_peers || 0;
-  const sV6 = d.visibility?.v6?.ris_peers_seeing || 0, tV6 = d.visibility?.v6?.total_ris_peers || 0;
-  const pctV4 = tV4 ? 100*sV4/tV4 : null;
-  const pctV6 = tV6 ? 100*sV6/tV6 : null;
-  let visPct;
-  if(v4 > 0 && v6 > 0 && pctV4 !== null && pctV6 !== null) visPct = Math.round((pctV4*v4 + pctV6*v6) / (v4+v6));
-  else if(v4 > 0 && pctV4 !== null) visPct = Math.round(pctV4);
-  else if(v6 > 0 && pctV6 !== null) visPct = Math.round(pctV6);
-  else visPct = Math.round(Math.max(pctV4 || 0, pctV6 || 0));
+  const v4 = s.v4 || 0, v6 = s.v6 || 0;
+  // Visibilité RIS calibrée (0..1) fournie par l'API, sémantique compatible
+  // avec l'ancien pourcentage de collecteurs voyant les annonces.
+  const visPct = Math.round((data.visibility || 0) * 100);
+  const valid = s.rpkiValid || 0, invalid = s.rpkiInvalid || 0, notfound = s.rpkiUnknown || 0;
+  const checked = valid + invalid + notfound; // l'API teste 100 % des préfixes annoncés
+  const lax = s.laxRoa || 0;
+  const irrCovered = s.irrCovered || 0;
 
-  if(totalPrefixes === 0) return {empty:true, holder};
-
-  if(prog) prog.textContent = "Récupération des préfixes annoncés…";
-  const ap = await api(`announced-prefixes/data.json?resource=AS${asn}`);
-  const prefixes = (ap?.data?.prefixes || []).map(p => p.prefix);
-
-  // Validation RPKI : test complet via la liste des ROA de l'AS ;
-  // en cas d'échec, repli sur l'ancienne méthode par échantillon.
-  let rpki;
-  try{
-    rpki = await validateWithRoas(asn, prefixes, prog);
-  }catch(e){
-    rpki = await validateBySample(asn, prefixes, prog);
+  // Problèmes affichables (mêmes libellés qu'avant) + exemples de ROA laxistes.
+  const problems = []; const laxExamples = [];
+  for(const p of (data.prefixes || [])){
+    if(p.rpki === "invalid" && problems.length < 30) problems.push({p: p.prefix, st: "invalid"});
+    else if(p.rpki === "unknown" && problems.length < 30) problems.push({p: p.prefix, st: "sans ROA"});
+    if(p.laxRoa && laxExamples.length < 5) laxExamples.push({p: p.prefix, max: p.roaMaxLength});
   }
-  // Si rien n'a pu être vérifié à cause du réseau, on remonte l'erreur globale.
-  if(rpki.checked === 0 && rpki.errors > 0) throw new Error("validation RPKI impossible");
 
-  const {valid, invalid, notfound, errors, problems, checked, sampled} = rpki;
-  const lax = rpki.lax || 0, laxExamples = rpki.laxExamples || [];
   const covPct = checked ? Math.round(100*valid/checked) : 0;
 
   let score = 0;
@@ -447,87 +401,12 @@ async function analyze(asn, prog){
   if(notfound > 0 && grade === "A") grade = "B"; // ≥1 préfixe sans ROA ⇒ pas de grade A
 
   return {
-    asn, holder, v4, v6, totalPrefixes, visPct, neighbours,
-    covPct, checked, invalid, notfound, errors, problems, score, grade,
+    asn, v4, v6, totalPrefixes, visPct,
+    covPct, checked, invalid, notfound, errors: 0, problems, score, grade,
     lax, laxExamples, // préfixes valides mais couverts par un ROA trop permissif (maxLength > longueur annoncée)
-    sampled // true = seul un échantillon a pu être testé (mode repli)
+    irrCovered, // préfixes couverts par un objet route IRR (RADB)
+    sampled: false // l'API teste toujours l'intégralité des préfixes
   };
-}
-
-// Test complet : liste des ROA de l'AS (endpoint rpki-roas) croisée côté client
-// avec TOUS les préfixes annoncés. Un préfixe est valide s'il est contenu dans
-// le préfixe d'un ROA de l'AS avec une longueur ≤ maxLength.
-async function validateWithRoas(asn, prefixes, prog){
-  if(prog) prog.textContent = "Récupération des ROA RPKI…";
-  const rr = await api(`rpki-roas/data.json?resource=AS${asn}`);
-  const list = rr?.data?.roas;
-  if(!Array.isArray(list)) throw new Error("format rpki-roas inattendu");
-  const roas = list.map(r => {
-    const c = parseCidr(String(r.prefix));
-    c.maxLength = Number.isFinite(+r.maxLength) ? +r.maxLength : c.len;
-    return c;
-  });
-
-  let valid=0, invalid=0, notfound=0, lax=0; const problems=[]; const uncovered=[]; const laxExamples=[];
-  const pushProblem = (p, st) => { if(problems.length < 30) problems.push({p, st}); };
-  if(prog) prog.textContent = `Validation RPKI de ${prefixes.length} préfixes…`;
-  for(const p of prefixes){
-    const ann = parseCidr(p);
-    // maxAllowed = maxLength la plus permissive parmi les ROA couvrant ce préfixe :
-    // si elle dépasse la longueur annoncée, un sous-préfixe forgé (origine usurpée)
-    // serait RPKI-VALID et gagnerait au longest-prefix match (ROA trop laxiste, cf. RFC 9319).
-    let covered=false, lenOk=false, maxAllowed=-1;
-    for(const roa of roas){
-      if(!cidrContains(roa, ann)) continue;
-      covered = true;
-      if(roa.maxLength > maxAllowed) maxAllowed = roa.maxLength;
-      if(ann.len <= roa.maxLength) lenOk = true;
-    }
-    if(lenOk){
-      valid++;
-      if(maxAllowed > ann.len){ lax++; if(laxExamples.length < 5) laxExamples.push({p, max: maxAllowed}); }
-    }
-    else if(covered){ invalid++; pushProblem(p, "invalid,more-specific"); }
-    else uncovered.push(p);
-  }
-
-  // Un préfixe sans ROA de cet AS peut être couvert par le ROA d'un autre AS
-  // (invalid d'origine) : vérification unitaire, plafonnée à MAX_PREFIX_CHECK.
-  const toVerify = uncovered.slice(0, MAX_PREFIX_CHECK);
-  for(let i=0;i<toVerify.length;i++){
-    if(prog) prog.textContent = `Vérification des préfixes sans ROA ${i+1}/${toVerify.length} (${toVerify[i]})…`;
-    try{
-      const rv = await api(`rpki-validation/data.json?resource=AS${asn}&prefix=${encodeURIComponent(toVerify[i])}`);
-      const st = rv?.data?.status;
-      if(st === "valid") valid++;
-      else if(st && st.startsWith("invalid")){ invalid++; pushProblem(toVerify[i], st); }
-      else { notfound++; pushProblem(toVerify[i], "sans ROA"); }
-    }catch(e){ notfound++; pushProblem(toVerify[i], "sans ROA"); }
-  }
-  for(const p of uncovered.slice(MAX_PREFIX_CHECK)){ notfound++; pushProblem(p, "sans ROA"); }
-
-  return {valid, invalid, notfound, errors:0, problems, checked: valid+invalid+notfound, sampled:false, lax, laxExamples};
-}
-
-// Repli : validation préfixe par préfixe sur un échantillon (ancienne méthode),
-// utilisé seulement si la liste des ROA est indisponible. Les erreurs réseau
-// sont comptées à part et exclues du calcul de couverture et du score.
-async function validateBySample(asn, prefixes, prog){
-  const sample = prefixes.slice(0, MAX_PREFIX_CHECK);
-  let valid=0, invalid=0, notfound=0, errors=0; const problems=[];
-  for(let i=0;i<sample.length;i++){
-    if(prog) prog.textContent = `Validation RPKI ${i+1}/${sample.length} (${sample[i]})…`;
-    try{
-      const rv = await api(`rpki-validation/data.json?resource=AS${asn}&prefix=${encodeURIComponent(sample[i])}`);
-      const st = rv?.data?.status;
-      if(st === "valid") valid++;
-      else if(st && st.startsWith("invalid")){ invalid++; problems.push({p:sample[i], st}); }
-      else { notfound++; problems.push({p:sample[i], st:"sans ROA"}); }
-    }catch(e){ errors++; }
-  }
-  const checked = valid+invalid+notfound;
-  // NB : la détection des ROA laxistes nécessite la liste des ROA, indisponible en mode repli.
-  return {valid, invalid, notfound, errors, problems, checked, sampled: prefixes.length > checked, lax:0, laxExamples:[]};
 }
 
 // Construit l'affichage à partir du modèle. ageMin>0 = résultat servi du cache.
@@ -578,7 +457,7 @@ function renderResult(m, ageMin){
     <div class="scorecard">
       <div class="grade g-${m.grade}">${m.grade}</div>
       <div>
-        <b>AS${m.asn} — ${esc(m.holder)}</b><br>
+        <b>AS${m.asn}</b><br>
         <span style="color:var(--muted);font-size:.92rem">${gradeMsg}</span>
       </div>
     </div>
@@ -587,7 +466,7 @@ function renderResult(m, ageMin){
       <div class="kpi"><b>${m.covPct} %</b><span>RPKI valide (${m.sampled ? `échantillon de ${m.checked}` : `${m.checked} préfixes testés`})</span></div>
       <div class="kpi"><b>${m.invalid}</b><span>préfixes INVALID</span></div>
       <div class="kpi"><b>${m.visPct} %</b><span>visibilité RIS</span></div>
-      <div class="kpi"><b>${m.neighbours}</b><span>voisins BGP observés</span></div>
+      <div class="kpi"><b>${m.irrCovered}/${m.totalPrefixes}</b><span>préfixes avec objet route IRR</span></div>
     </div>
     <div class="issues">${sampleNote}${errorNote}${issuesHtml}</div>
     <div class="cta-box" id="ctaBox">
