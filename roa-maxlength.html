@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROA maxLength trop permissif (RFC 9319) : vos préfixes « valides » mais attaquables</title>
+<meta name="description" content="Un ROA avec une maxLength plus longue que le préfixe annoncé est RPKI-valide mais expose au forged-origin sub-prefix hijack. Comprendre la RFC 9319, vérifier vos ROA gratuitement et corriger en 30 minutes.">
+<link rel="canonical" href="https://sentinelle-routage.fr/roa-maxlength.html">
+<link rel="alternate" hreflang="fr" href="https://sentinelle-routage.fr/roa-maxlength.html">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230b1220' stroke='%234f8cff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%234f8cff' stroke-width='1.5' opacity='.6'/%3E%3Ccircle cx='20' cy='12' r='3' fill='%232dd4a7'/%3E%3C/svg%3E">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Sentinelle Routage">
+<meta property="og:title" content="ROA maxLength trop permissif (RFC 9319) : vos préfixes « valides » mais attaquables">
+<meta property="og:description" content="RPKI valide ne veut pas dire protégé. Une maxLength trop large ouvre la porte au forged-origin sub-prefix hijack. Explication, vérification gratuite, correction.">
+<meta property="og:url" content="https://sentinelle-routage.fr/roa-maxlength.html">
+<meta property="og:image" content="https://sentinelle-routage.fr/og-image.png">
+<meta property="og:locale" content="fr_FR">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "headline": "ROA maxLength trop permissif (RFC 9319) : vos préfixes « valides » mais attaquables",
+      "inLanguage": "fr",
+      "author": {"@type": "Organization", "name": "Sentinelle Routage (N&R Consulting)"},
+      "publisher": {"@type": "Organization", "name": "N&R Consulting"},
+      "mainEntityOfPage": "https://sentinelle-routage.fr/roa-maxlength.html",
+      "about": ["RPKI", "ROA", "maxLength", "RFC 9319", "BGP hijack"]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Mon préfixe est « RPKI valid », suis-je protégé ?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Pas forcément. Si votre ROA autorise une maxLength plus longue que le préfixe que vous annoncez réellement, un attaquant qui usurpe votre numéro d'AS peut annoncer un sous-préfixe plus spécifique, lui aussi « valid » aux yeux de la validation RPKI. Plus spécifique gagne toujours en BGP : le trafic est détourné. C'est le forged-origin sub-prefix hijack décrit par la RFC 9319."}
+        },
+        {
+          "@type": "Question",
+          "name": "Que recommande la RFC 9319 pour la maxLength ?",
+          "acceptedAnswer": {"@type": "Answer", "text": "La RFC 9319 (BCP 185) recommande des « ROA minimaux » : la maxLength doit être égale à la longueur du préfixe effectivement annoncé, sauf besoin opérationnel justifié et documenté (ingénierie de trafic, DDoS scrubbing). Un ROA /24 avec maxLength /24 protège ; un ROA /24 avec maxLength /32 expose 255 sous-préfixes annonçables par un attaquant."}
+        },
+        {
+          "@type": "Question",
+          "name": "Comment corriger un ROA trop permissif ?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Dans le portail de votre RIR (pour le RIPE NCC : my.ripe.net, rubrique Resources → RPKI Dashboard), recréez le ROA avec une maxLength égale à la longueur annoncée, une entrée par préfixe réellement annoncé. L'opération prend généralement moins de 30 minutes et ne provoque aucune coupure si vous couvrez d'abord toutes vos annonces existantes avant de supprimer l'ancien ROA."}
+        },
+        {
+          "@type": "Question",
+          "name": "Comment savoir si mes ROA sont concernés ?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Le vérificateur gratuit de Sentinelle Routage analyse votre ASN en moins d'une minute et signale chaque préfixe couvert par un ROA dont la maxLength dépasse la longueur annoncée, avec le détail préfixe par préfixe. Aucune inscription requise."}
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#111a2e; --panel2:#0e1626; --line:#1f2c47;
+    --txt:#e8eefb; --muted:#93a4c3; --acc:#4f8cff; --acc2:#7c5cff;
+    --ok:#2dd4a7; --warn:#f5b14c; --bad:#f4607a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+  .wrap{max-width:820px;margin:0 auto;padding:0 20px}
+  header{padding:18px 0;border-bottom:1px solid var(--line)}
+  .brand{font-weight:700;font-size:1.15rem;letter-spacing:.3px}
+  .brand a{color:var(--txt);text-decoration:none}
+  .brand span{color:var(--acc)}
+  article{padding:44px 0}
+  h1{font-size:clamp(1.5rem,3.5vw,2.2rem);line-height:1.25;margin-bottom:14px}
+  h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);font-size:1.05rem;margin-bottom:28px}
+  h2{font-size:1.3rem;margin:34px 0 10px}
+  p,li{color:var(--muted);font-size:.97rem;margin-bottom:12px}
+  ul,ol{padding-left:22px;margin-bottom:12px}
+  strong{color:var(--txt)}
+  a{color:var(--acc)}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:20px 0}
+  .box.warn{border-color:rgba(245,177,76,.5);background:rgba(245,177,76,.06)}
+  .box.ok{border-color:rgba(45,212,167,.5);background:rgba(45,212,167,.06)}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88rem;background:var(--panel2);border:1px solid var(--line);border-radius:6px}
+  code{padding:2px 6px}
+  pre{padding:14px;overflow-x:auto;margin:14px 0;color:var(--txt)}
+  .cta-box{margin:30px 0;padding:22px;border:1px dashed var(--acc);border-radius:10px;background:rgba(79,140,255,.06);text-align:center}
+  .cta-box p{margin-bottom:14px}
+  .btn{display:inline-block;background:linear-gradient(90deg,var(--acc),var(--acc2));color:#fff;border:none;border-radius:9px;padding:12px 22px;font-size:1rem;font-weight:600;text-decoration:none}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;color:var(--muted)}
+  th{color:var(--txt);background:var(--panel2)}
+  footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand"><a href="/">Sentinelle <span>Routage</span></a></div></div></header>
+
+<article class="wrap">
+<h1>ROA maxLength trop permissif : vos préfixes sont « valides »&hellip; <em>et attaquables</em> (RFC 9319)</h1>
+<p class="lead">Avoir des ROA et afficher « RPKI valid » partout ne suffit pas. Si vos ROA autorisent une <strong>maxLength</strong> plus longue que ce que vous annoncez réellement, vous avez signé un chèque en blanc à n'importe quel attaquant capable d'usurper votre numéro d'AS. Explication, vérification et correction en 30 minutes.</p>
+
+<h2>Le piège : « valid » ne veut pas dire « protégé »</h2>
+<p>Un ROA (Route Origin Authorization) déclare : « l'AS X est autorisé à annoncer le préfixe P, jusqu'à la longueur maxLength ». La validation d'origine (ROV) rejette les annonces dont l'origine ne correspond pas. Jusque-là, tout va bien.</p>
+<p>Le problème naît quand la maxLength dépasse la longueur réellement annoncée :</p>
+<div class="box warn">
+<p><strong>Exemple.</strong> Vous annoncez <code>192.0.2.0/24</code> et votre ROA indique <code>192.0.2.0/24, maxLength /32</code>.</p>
+<p>Un attaquant annonce <code>192.0.2.128/25</code> en usurpant votre numéro d'AS comme origine (forged origin). Cette annonce est <strong>couverte par votre propre ROA</strong> : elle passe la validation RPKI comme « valid ». Et comme /25 est plus spécifique que /24, <strong>BGP la préfère partout</strong>. Résultat : la moitié de votre réseau est détournée, avec la bénédiction involontaire de votre ROA.</p>
+</div>
+<p>C'est le <strong>forged-origin sub-prefix hijack</strong>. La validation d'origine seule ne peut pas le bloquer (elle ne vérifie pas le chemin, seulement l'origine déclarée). La seule défense côté titulaire de ressources : ne pas laisser d'espace annonçable entre ce que vous annoncez et ce que votre ROA autorise.</p>
+
+<h2>Ce que dit la RFC 9319 (BCP 185)</h2>
+<p>La <a href="https://www.rfc-editor.org/rfc/rfc9319.html" rel="noopener" target="_blank">RFC 9319, « The Use of maxLength in the RPKI »</a>, est une Best Current Practice co-signée notamment par des chercheurs à l'origine des mesures sur ce vecteur d'attaque. Ses recommandations tiennent en trois points :</p>
+<ol>
+<li><strong>ROA minimaux</strong> : la maxLength doit être égale à la longueur du préfixe effectivement annoncé (ou omise, ce qui revient au même).</li>
+<li>Un ROA ne devrait couvrir <strong>que des préfixes réellement annoncés</strong> : un ROA sur un préfixe non annoncé est lui aussi exploitable en forged-origin.</li>
+<li>Les exceptions (ingénierie de trafic, protection DDoS avec annonce de sous-préfixes à la demande, agrégation) doivent être <strong>délibérées et documentées</strong>, pas un réglage par défaut.</li>
+</ol>
+<table>
+<tr><th>ROA</th><th>Annonce réelle</th><th>Verdict</th></tr>
+<tr><td><code>192.0.2.0/24, maxLength /24</code></td><td><code>192.0.2.0/24</code></td><td>✅ Minimal, conforme RFC 9319</td></tr>
+<tr><td><code>192.0.2.0/24, maxLength /28</code></td><td><code>192.0.2.0/24</code></td><td>⚠️ 16 sous-préfixes /28 annonçables par un attaquant</td></tr>
+<tr><td><code>192.0.2.0/24, maxLength /32</code></td><td><code>192.0.2.0/24</code></td><td>🔴 Chèque en blanc : tout sous-préfixe jusqu'au /32 passera « valid »</td></tr>
+</table>
+
+<h2>Vérifier vos ROA en 1 minute</h2>
+<p>Notre vérificateur gratuit analyse l'ensemble des préfixes annoncés par votre ASN et signale, préfixe par préfixe, ceux qui sont couverts par un ROA dont la maxLength dépasse la longueur annoncée — en plus de la couverture RPKI globale, de la visibilité BGP et des objets IRR.</p>
+<div class="cta-box">
+<p><strong>Votre ASN a-t-il des ROA trop permissifs ?</strong><br>Test gratuit, sans inscription, résultat en moins d'une minute.</p>
+<a class="btn" href="/#checker">Analyser mon ASN</a>
+</div>
+
+<h2>Corriger : ~30 minutes dans le portail de votre RIR</h2>
+<p>Pour les ressources RIPE NCC (le cas le plus courant en Europe) :</p>
+<ol>
+<li>Listez vos annonces réelles (votre vérification ci-dessus vous donne la liste exacte).</li>
+<li>Dans <a href="https://my.ripe.net/" rel="noopener" target="_blank">my.ripe.net</a> → Resources → <strong>RPKI Dashboard</strong>, créez un ROA par préfixe réellement annoncé, maxLength = longueur annoncée.</li>
+<li>Vérifiez que toutes vos annonces existantes sont couvertes « valid » par les nouveaux ROA <strong>avant</strong> de supprimer les anciens : aucune coupure possible dans cet ordre.</li>
+<li>Si vous utilisez des sous-préfixes pour l'ingénierie de trafic ou l'anti-DDoS, créez des ROA explicites pour ces sous-préfixes précis plutôt qu'une maxLength large.</li>
+</ol>
+<div class="box ok">
+<p><strong>Et ensuite ?</strong> Un ROA corrigé aujourd'hui peut redevenir permissif demain (nouvelle annonce, nouveau ROA créé à la va-vite, changement d'upstream). Sentinelle Routage surveille vos ASN en continu et vous alerte par email et Telegram dès qu'un préfixe passe invalid, perd sa visibilité ou se retrouve couvert par un ROA non conforme à la RFC 9319 — avec un rapport de préparation NIS2/MANRS pour vos audits.</p>
+</div>
+
+<h2>FAQ</h2>
+<p><strong>Une maxLength large, c'est parfois légitime ?</strong><br>Oui : annonce de sous-préfixes à la demande (scrubbing DDoS), ingénierie de trafic. La RFC 9319 ne l'interdit pas, elle demande que ce soit un choix délibéré, limité aux préfixes concernés, et de préférence couvert par des ROA explicites par sous-préfixe.</p>
+<p><strong>Mon ROA couvre un préfixe que je n'annonce pas, c'est grave ?</strong><br>C'est le même vecteur : un attaquant peut annoncer ce préfixe (ou ses sous-préfixes selon la maxLength) en forgeant votre origine, et l'annonce sera « valid ». La RFC 9319 recommande de ne créer des ROA que pour ce qui est annoncé.</p>
+<p><strong>ASPA ou BGPsec règlent-ils le problème ?</strong><br>À terme, la validation de chemin (BGPsec) et ASPA compliquent sérieusement le forged-origin. En attendant leur déploiement large, les ROA minimaux restent la défense concrète, disponible aujourd'hui, et c'est ce que mesure notre vérificateur.</p>
+
+<div class="cta-box">
+<p><strong>Surveillance continue + preuve documentaire pour vos audits.</strong><br>39 €/mois par ASN, alertes email + Telegram, rapport de préparation NIS2/MANRS. <a href="/rapport-exemple.pdf">Voir un rapport d'exemple</a>.</p>
+<a class="btn" href="/#tarifs">Découvrir l'offre</a>
+</div>
+</article>
+
+<footer>© 2026 N&R Consulting — Sentinelle Routage · <a href="/">Accueil</a> · <a href="https://sentinelle-backend-production.up.railway.app/status" target="_blank" rel="noopener">État du service (temps réel)</a><div style="margin-top:10px;font-size:.78rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5">Données de routage : <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/" style="color:var(--muted);text-decoration:underline">RIPE NCC Routing Information Service (RIS)</a> et <a href="https://ris-live.ripe.net/" style="color:var(--muted);text-decoration:underline">RIS Live</a> · Validation RPKI : instance <a href="https://nlnetlabs.nl/projects/routing/routinator/" style="color:var(--muted);text-decoration:underline">Routinator</a> locale.<br>This product includes data from the RIPE NCC Routing Information Service (RIS), © RIPE NCC, used in accordance with the RIPE NCC terms and conditions.</div></footer>
+</body>
+</html>
