@@ -183,10 +183,11 @@
     <p class="lead" style="margin-top:18px;margin-bottom:0">None of these incidents would have been stopped by a manual check run once a quarter. All were detectable <b>within minutes</b> by continuous BGP monitoring.</p>
   </section>
 
-  <section>
+  <section id="tarifs">
     <h2>Launch pricing</h2>
-    <p class="lead">Self-serve, no commitment, no sales call. Online payment is open.</p><p style="margin:14px 0 0"><a href="https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;margin:4px 6px 4px 0">Subscribe — Standard €39/month · 3 months free for the first 20</a><a href="https://buy.stripe.com/14AcMY6A26Eg36E3ZN87K01" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;border:1px solid var(--acc);color:var(--acc);text-decoration:none;font-weight:700;margin:4px 0">Pro / MSP — €149/month</a></p>
+    <p class="lead">Self-serve, no commitment, no sales call. Online payment is open.</p><p style="margin:14px 0 0"><a href="https://buy.stripe.com/dRm14gf6y2o036Ebsf87K03" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;margin:4px 6px 4px 0">Subscribe — Standard €39/month · first month free</a><a href="https://buy.stripe.com/14AcMY6A26Eg36E3ZN87K01" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;border:1px solid var(--acc);color:var(--acc);text-decoration:none;font-weight:700;margin:4px 0">Pro / MSP — €149/month</a></p>
     <p style="margin:10px 0 0;font-size:.95rem"><a href="/rapport-exemple.pdf" target="_blank" rel="noopener" style="color:var(--acc);font-weight:600">📄 See a sample report (PDF, 6 pages, French)</a> — the exact structure of the monthly NIS2/MANRS report, on a fictional network.</p>
+    <p style="margin:10px 0 0;font-size:.95rem">Need a one-off assessment rather than a subscription? <b>Routing health audit + NIS2 readiness</b> (one-shot, delivered within 10 days): Flash €490 · Full €1,490 · NIS2 Pack €2,990. <a href="mailto:netrconsulting@gmail.com?subject=Routing%20audit%20NIS2" style="color:var(--acc);font-weight:600">Ask for details by email</a>.</p>
     <div class="grid3">
       <div class="card"><span class="tag">Free</span><div class="price">€0</div>
         <ul><li>Unlimited manual checks of your ASN</li><li>Routing health score</li><li>RPKI validation of <b>all your announced prefixes</b></li><li>One-off snapshot (no monitoring)</li></ul></div>
@@ -200,27 +201,18 @@
   <section id="dp-section">
     <div class="waitlist" style="border-color:var(--acc)">
       <span class="tag" style="background:rgba(45,212,167,.15);color:var(--ok)">Founding program</span>
-      <h2>Become one of the 10 founding networks</h2>
-      <p>You operate an ASN, and continuous monitoring plus compliance evidence speak to you? Join the design partner program: <b>free monitoring for the whole beta</b>, your feedback steering the roadmap, and direct access to the engineer behind the tool. In exchange: some usage feedback, and (optional) permission to mention your network as a pilot.</p>
-      <form id="dp" onsubmit="return submitDP(event)">
-        <div class="row">
-          <input type="email" id="dp-email" required aria-label="Email" placeholder="email@your-noc.com">
-          <input type="text" id="dp-asn" required aria-label="Your ASN" placeholder="Your ASN (e.g. AS201659)">
-        </div>
-        <div class="row" style="margin-top:10px">
-          <input type="text" id="dp-org" aria-label="Network or organization (optional)" placeholder="Network / organization (optional)">
-          <button type="submit" id="dpbtn">Apply as a founding network</button>
-        </div>
-      </form>
+      <h2>Founding program: full ✅</h2>
+      <p>All founding-network seats are <b>taken</b>: 5 pilot networks (operators, hosting providers, NIS2 entities) are already shaping the roadmap. Thank you. To join Sentinelle today: <b>first month free</b> on the Standard plan, no commitment — or join the waiting list below to be notified if a pilot seat opens up.</p>
+      <p style="margin:6px 0 0"><a href="#tarifs" style="display:inline-block;padding:11px 20px;border-radius:9px;background:var(--acc);color:#fff;text-decoration:none;font-weight:700">Start — first month free</a></p>
       <div class="okmsg" id="dpok">✅ Application received. I'll get back to you personally, engineer to engineer.</div>
-      <div class="note">10 seats. Priority to operators, hosting providers, MSPs and NIS2 entities.</div>
+      <div class="note">Design partner program closed on 20 July 2026, with 5 pilot networks.</div>
     </div>
   </section>
 
   <section id="waitlist-section">
     <div class="waitlist">
       <h2>Join the waiting list</h2>
-      <p>The first 20 sign-ups get 3 months free on the Standard plan and direct input on the roadmap.</p>
+      <p>Launch offer: <b>first month free</b> on the Standard plan, and direct input on the roadmap for subscribers.</p>
       <form id="wl" onsubmit="return submitWL(event)">
         <div class="row">
           <input type="email" id="email" required aria-label="Email" placeholder="email@your-noc.com">
@@ -486,9 +478,9 @@ function renderResult(m, ageMin){
         <li><b>12-month history</b> and continuous RPKI hygiene.</li>
         <li><b>Monthly PDF report</b> for your NIS2 / MANRS audits (Pro plan).</li>
       </ul>
-      <button onclick="payIntent('${m.asn}')">💶 Monitor AS${m.asn} continuously — €39/month, 3 months free</button>
+      <button onclick="payIntent('${m.asn}')">💶 Monitor AS${m.asn} continuously — €39/month, first month free</button>
       <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${m.asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Just keep me posted</button>
-      <div style="margin-top:12px;font-size:.88rem;color:var(--muted)">You operate AS${m.asn}? <a href="#dp-section" onclick="document.getElementById('dp-asn').value='AS${m.asn}';document.getElementById('dp-section').scrollIntoView({behavior:'smooth'});return false;" style="color:var(--acc)">Become one of the 10 founding networks</a> — free monitoring during the beta.</div>
+      <div style="margin-top:12px;font-size:.88rem;color:var(--muted)">Founding program full (5 pilot networks). <a href="#tarifs" style="color:var(--acc)">Start with the first month free</a> — no commitment.</div>
     </div>`;
 }
 
@@ -525,12 +517,12 @@ function logPayIntent(asn){
   }catch(e){ /* no-op */ }
 }
 function payIntent(asn){
-  logPayIntent(asn); try{ window.open("https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00", "_blank", "noopener"); }catch(e){}
+  logPayIntent(asn); try{ window.open("https://buy.stripe.com/dRm14gf6y2o036Ebsf87K03", "_blank", "noopener"); }catch(e){}
   const box = document.getElementById("ctaBox");
   if(!box) return;
   box.innerHTML = `
-    <p><b>The subscription page opened in a new tab (<a href="https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00" target="_blank" rel="noopener">or click here</a>) — 3 months free, no commitment.</b><br>
-    Leave your email to be <b>contacted first</b> (and 3 months free for the first 20). I'll get back to you personally, engineer to engineer.</p>
+    <p><b>The subscription page opened in a new tab (<a href="https://buy.stripe.com/dRm14gf6y2o036Ebsf87K03" target="_blank" rel="noopener">or click here</a>) — first month free, no commitment.</b><br>
+    Leave your email to be <b>contacted first</b> (launch offer: first month free). I'll get back to you personally, engineer to engineer.</p>
     <div class="row">
       <input type="email" id="payEmail" aria-label="Email" placeholder="email@your-noc.com" onkeydown="if(event.key==='Enter')submitPayLead('${asn}')">
       <button onclick="submitPayLead('${asn}')">Get contacted</button>
@@ -548,7 +540,7 @@ function submitPayLead(asn){
   fd.append(ENTRY_ASN, "AS" + asn + " — INTENTION PAYER");
   fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
   const box = document.getElementById("ctaBox");
-  if(box) box.innerHTML = "<p>✅ <b>Perfect, noted.</b> You'll be contacted first at launch (3 months free for the first 20). Thanks for moving the project forward.</p>";
+  if(box) box.innerHTML = "<p>✅ <b>Perfect, noted.</b> You'll be contacted first (launch offer: first month free). Thanks for moving the project forward.</p>";
 }
 
 // One "visit" line per browsing session, tagged "EN" in the ASN column so
