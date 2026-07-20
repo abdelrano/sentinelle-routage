@@ -184,8 +184,9 @@
 
   <section id="tarifs">
     <h2>Tarifs au lancement</h2>
-    <p class="lead">Self-serve, sans engagement, sans appel commercial. Paiement en ligne ouvert.</p><p style="margin:14px 0 0"><a href="https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;margin:4px 6px 4px 0">S'abonner — Standard 39 €/mois · 3 mois offerts aux 20 premiers</a><a href="https://buy.stripe.com/14AcMY6A26Eg36E3ZN87K01" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;border:1px solid var(--acc);color:var(--acc);text-decoration:none;font-weight:700;margin:4px 0">Pro / MSP — 149 €/mois</a></p>
+    <p class="lead">Self-serve, sans engagement, sans appel commercial. Paiement en ligne ouvert.</p><p style="margin:14px 0 0"><a href="https://buy.stripe.com/dRm14gf6y2o036Ebsf87K03" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;margin:4px 6px 4px 0">S'abonner — Standard 39 €/mois · 1er mois offert</a><a href="https://buy.stripe.com/14AcMY6A26Eg36E3ZN87K01" target="_blank" rel="noopener" style="display:inline-block;padding:11px 20px;border-radius:9px;border:1px solid var(--acc);color:var(--acc);text-decoration:none;font-weight:700;margin:4px 0">Pro / MSP — 149 €/mois</a></p>
     <p style="margin:10px 0 0;font-size:.95rem"><a href="/rapport-exemple.pdf" target="_blank" rel="noopener" style="color:var(--acc);font-weight:600">📄 Voir un rapport d'exemple (PDF, 6 pages)</a> — la structure exacte du rapport mensuel NIS2/MANRS, sur un réseau fictif.</p>
+    <p style="margin:10px 0 0;font-size:.95rem">Besoin d'un état des lieux ponctuel plutôt que d'un abonnement ? <b>Audit santé routage + préparation NIS2</b> (one-shot, livrable sous 10 jours) : Flash 490 € · Complet 1 490 € · Pack NIS2 2 990 €. <a href="mailto:netrconsulting@gmail.com?subject=Audit%20routage%20NIS2" style="color:var(--acc);font-weight:600">Demander le détail par email</a>.</p>
     <div class="grid3">
       <div class="card"><span class="tag">Gratuit</span><div class="price">0 €</div>
         <ul><li>Check manuel illimité de votre ASN</li><li>Score de santé routage</li><li>Validation RPKI de <b>tous vos préfixes</b> annoncés</li><li>Photo ponctuelle (pas de surveillance)</li></ul></div>
@@ -199,27 +200,18 @@
   <section id="dp-section">
     <div class="waitlist" style="border-color:var(--acc)">
       <span class="tag" style="background:rgba(45,212,167,.15);color:var(--ok)">Programme fondateur</span>
-      <h2>Devenez l'un des 10 réseaux fondateurs</h2>
-      <p>Vous opérez un ASN et la surveillance continue + la preuve de conformité vous parlent ? Rejoignez le programme design partner : <b>surveillance offerte pendant toute la beta</b>, votre avis qui oriente la roadmap, et un accès direct à l'ingénieur derrière l'outil. En échange : quelques retours d'usage, et l'autorisation (optionnelle) de citer votre réseau comme pilote.</p>
-      <form id="dp" onsubmit="return submitDP(event)">
-        <div class="row">
-          <input type="email" id="dp-email" required aria-label="Email" placeholder="email@votre-noc.fr">
-          <input type="text" id="dp-asn" required aria-label="Votre ASN" placeholder="Votre ASN (ex. AS201659)">
-        </div>
-        <div class="row" style="margin-top:10px">
-          <input type="text" id="dp-org" aria-label="Réseau ou organisation (optionnel)" placeholder="Réseau / organisation (optionnel)">
-          <button type="submit" id="dpbtn">Candidater comme réseau fondateur</button>
-        </div>
-      </form>
+      <h2>Programme fondateur : complet ✅</h2>
+      <p>Les places de réseau fondateur sont <b>toutes pourvues</b> : 5 réseaux pilotes (opérateurs, hébergeurs, entités NIS2) façonnent déjà la roadmap. Merci à eux. Pour rejoindre Sentinelle dès maintenant : <b>1er mois offert</b> sur le plan Standard, sans engagement — ou inscrivez-vous à la liste d'attente ci-dessous pour être prévenu si une place de pilote se libère.</p>
+      <p style="margin:6px 0 0"><a href="#tarifs" style="display:inline-block;padding:11px 20px;border-radius:9px;background:var(--acc);color:#fff;text-decoration:none;font-weight:700">Démarrer — 1er mois offert</a></p>
       <div class="okmsg" id="dpok">✅ Candidature reçue. Je vous recontacte personnellement, d'ingénieur à ingénieur.</div>
-      <div class="note">10 places. Priorité aux opérateurs, hébergeurs, MSP et entités NIS2.</div>
+      <div class="note">Programme design partner clos le 20/07/2026, à 5 réseaux pilotes.</div>
     </div>
   </section>
 
   <section id="waitlist-section">
     <div class="waitlist">
       <h2>Rejoindre la liste d'attente</h2>
-      <p>Les 20 premiers inscrits auront 3 mois offerts sur le plan Standard et un accès direct à la roadmap.</p>
+      <p>Offre de lancement : <b>1er mois offert</b> sur le plan Standard, et un accès direct à la roadmap pour les inscrits.</p>
       <form id="wl" onsubmit="return submitWL(event)">
         <div class="row">
           <input type="email" id="email" required aria-label="Email" placeholder="email@votre-noc.fr">
@@ -497,7 +489,7 @@ function renderResult(m, ageMin){
       </ul>
       <button onclick="payIntent('${m.asn}')">💶 Je paierais pour surveiller AS${m.asn} en continu (39 €/mois)</button>
       <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${m.asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Juste me tenir informé</button>
-      <div style="margin-top:12px;font-size:.88rem;color:var(--muted)">Vous opérez AS${m.asn} ? <a href="#dp-section" onclick="document.getElementById('dp-asn').value='AS${m.asn}';document.getElementById('dp-section').scrollIntoView({behavior:'smooth'});return false;" style="color:var(--acc)">Devenez l'un des 10 réseaux fondateurs</a> — surveillance offerte pendant la beta.</div>
+      <div style="margin-top:12px;font-size:.88rem;color:var(--muted)">Programme fondateur complet (5 réseaux pilotes). <a href="#tarifs" style="color:var(--acc)">Démarrer avec le 1er mois offert</a> — sans engagement.</div>
     </div>`;
 }
 
@@ -537,12 +529,12 @@ function logPayIntent(asn){
 }
 // Au clic : logue l'intention immédiatement, puis demande l'email en place.
 function payIntent(asn){
-  logPayIntent(asn); try{ window.open("https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00", "_blank", "noopener"); }catch(e){}
+  logPayIntent(asn); try{ window.open("https://buy.stripe.com/dRm14gf6y2o036Ebsf87K03", "_blank", "noopener"); }catch(e){}
   const box = document.getElementById("ctaBox");
   if(!box) return;
   box.innerHTML = `
-    <p><b>La page d'abonnement s'est ouverte dans un nouvel onglet (<a href="https://buy.stripe.com/dRm6oA1fI5Ac9v253R87K00" target="_blank" rel="noopener">sinon cliquez ici</a>) — 3 mois offerts, sans engagement.</b><br>
-    Laissez votre email pour être <b>recontacté en priorité</b> (et 3 mois offerts pour les 20 premiers). Je reviens vers vous personnellement, d'ingénieur à ingénieur.</p>
+    <p><b>La page d'abonnement s'est ouverte dans un nouvel onglet (<a href="https://buy.stripe.com/dRm14gf6y2o036Ebsf87K03" target="_blank" rel="noopener">sinon cliquez ici</a>) — 1er mois offert, sans engagement.</b><br>
+    Laissez votre email pour être <b>recontacté en priorité</b> (offre de lancement : 1er mois offert). Je reviens vers vous personnellement, d'ingénieur à ingénieur.</p>
     <div class="row">
       <input type="email" id="payEmail" aria-label="Email" placeholder="email@votre-noc.fr" onkeydown="if(event.key==='Enter')submitPayLead('${asn}')">
       <button onclick="submitPayLead('${asn}')">Être recontacté</button>
@@ -561,7 +553,7 @@ function submitPayLead(asn){
   fd.append(ENTRY_ASN, "AS" + asn + " — INTENTION PAYER");
   fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
   const box = document.getElementById("ctaBox");
-  if(box) box.innerHTML = "<p>✅ <b>Parfait, c'est noté.</b> Vous serez recontacté en priorité au lancement (3 mois offerts pour les 20 premiers). Merci de faire avancer le projet.</p>";
+  if(box) box.innerHTML = "<p>✅ <b>Parfait, c'est noté.</b> Vous serez recontacté en priorité (offre de lancement : 1er mois offert). Merci de faire avancer le projet.</p>";
 }
 
 // Logue une "visite" une seule fois par session de navigation (marqueur VISIT_EMAIL).
