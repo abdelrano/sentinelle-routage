@@ -299,11 +299,11 @@ function esc(s){
 
 // Logue une analyse (ASN) dans le Google Form, marquée par ANALYTICS_EMAIL.
 // Erreurs silencieuses.
-function logAnalysis(asn){
+function logAnalysis(asn, grade){
   try{
     const fd = new FormData();
     fd.append(ENTRY_EMAIL, ANALYTICS_EMAIL);
-    fd.append(ENTRY_ASN, "AS" + asn);
+    fd.append(ENTRY_ASN, "AS" + asn + (grade ? "|" + grade : ""));
     fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
   }catch(e){ /* no-op */ }
 }
@@ -356,7 +356,7 @@ async function runCheck(force){
       res.innerHTML = `<div class="issue i-warn">AS${asn} n'annonce actuellement aucun préfixe visible par les collecteurs RIS. Vérifiez le numéro d'AS.</div>`;
       return;
     }
-    logAnalysis(asn);       // journalise l'analyse de cet ASN
+    logAnalysis(asn, model.grade); // journalise l'analyse (note incluse : AS123|D)
     cacheSet(asn, model);   // cache local 1 h (anti rate-limit)
     prog.style.display="none"; btn.disabled=false; res.style.display="block";
     renderResult(model, 0);
