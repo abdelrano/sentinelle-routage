@@ -294,11 +294,11 @@ function esc(s){
   return d.innerHTML;
 }
 
-function logAnalysis(asn){
+function logAnalysis(asn, grade){
   try{
     const fd = new FormData();
     fd.append(ENTRY_EMAIL, ANALYTICS_EMAIL);
-    fd.append(ENTRY_ASN, "AS" + asn);
+    fd.append(ENTRY_ASN, "AS" + asn + (grade ? "|" + grade : ""));
     fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
   }catch(e){ /* no-op */ }
 }
@@ -348,7 +348,7 @@ async function runCheck(force){
       res.innerHTML = `<div class="issue i-warn">AS${asn} currently announces no prefixes visible to RIS collectors. Double-check the AS number.</div>`;
       return;
     }
-    logAnalysis(asn);
+    logAnalysis(asn, model.grade); // grade included: AS123|D
     cacheSet(asn, model);
     prog.style.display="none"; btn.disabled=false; res.style.display="block";
     renderResult(model, 0);
