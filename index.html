@@ -490,6 +490,11 @@ function renderResult(m, ageMin){
       </ul>
       <button onclick="payIntent('${m.asn}')">💶 Je paierais pour surveiller AS${m.asn} en continu (39 €/mois)</button>
       <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${m.asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Juste me tenir informé</button>
+      <div class="row" style="margin-top:12px">
+        <input type="email" id="rptEmail" aria-label="Email" placeholder="email@votre-noc.fr" onkeydown="if(event.key==='Enter')submitReportEmail('${m.asn}','${m.grade}')">
+        <button onclick="submitReportEmail('${m.asn}','${m.grade}')" style="background:transparent;border:1px solid var(--acc);color:var(--acc)">📧 Recevoir cette analyse par email</button>
+      </div>
+      <div class="note" style="text-align:left">Le détail préfixe par préfixe, envoyé par l'ingénieur (pas un robot) sous 24 h ouvrées, + une re-analyse offerte dans 30 jours. Pas de spam.</div>
       <div style="margin-top:12px;font-size:.88rem;color:var(--muted)">Programme fondateur complet (5 réseaux pilotes). <a href="#tarifs" style="color:var(--acc)">Démarrer avec le 1er mois offert</a> — sans engagement.</div>
     </div>`;
 }
@@ -555,6 +560,21 @@ function submitPayLead(asn){
   fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
   const box = document.getElementById("ctaBox");
   if(box) box.innerHTML = "<p>✅ <b>Parfait, c'est noté.</b> Vous serez recontacté en priorité (offre de lancement : 1er mois offert). Merci de faire avancer le projet.</p>";
+}
+
+// Capture email « rapport demandé » : le visiteur laisse son email pour recevoir
+// le détail de SON analyse. Ligne marquée « — RAPPORT DEMANDÉ » (avec la note) dans la
+// feuille : lead chaud, traité manuellement sous 24 h ouvrées.
+function submitReportEmail(asn, grade){
+  const pe = document.getElementById("rptEmail");
+  const email = pe ? pe.value.trim() : "";
+  if(!email || email.indexOf("@") < 1){ if(pe){ pe.focus(); pe.style.borderColor = "var(--bad)"; } return; }
+  const fd = new FormData();
+  fd.append(ENTRY_EMAIL, email);
+  fd.append(ENTRY_ASN, "AS" + asn + (grade ? "|" + grade : "") + " — RAPPORT DEMANDÉ");
+  fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  const row = pe.closest(".row");
+  if(row){ row.outerHTML = "<p style='margin-top:12px'>✅ <b>C'est noté.</b> Vous recevrez le détail de l'analyse d'AS" + asn + " par email sous 24 h ouvrées.</p>"; }
 }
 
 // Logue une "visite" une seule fois par session de navigation (marqueur VISIT_EMAIL).
