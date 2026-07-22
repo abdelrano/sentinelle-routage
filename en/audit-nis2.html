@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BGP/RPKI Routing Security Audit + NIS2 Readiness — from EUR 490 | Sentinelle Routage</title>
+<meta name="description" content="One-shot routing security audit of your ASN: RPKI, ROAs, BGP visibility, IRR, hijack exposure. A PDF report your team and your NIS2 auditor can actually use. From EUR 490 (excl. VAT), delivered within 5 days, fully remote.">
+<link rel="canonical" href="https://sentinelle-routage.fr/en/audit-nis2.html">
+<link rel="alternate" hreflang="fr" href="https://sentinelle-routage.fr/audit-nis2.html">
+<link rel="alternate" hreflang="en" href="https://sentinelle-routage.fr/en/audit-nis2.html">
+<link rel="alternate" hreflang="x-default" href="https://sentinelle-routage.fr/en/audit-nis2.html">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230b1220' stroke='%234f8cff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%234f8cff' stroke-width='1.5' opacity='.6'/%3E%3Ccircle cx='20' cy='12' r='3' fill='%232dd4a7'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sentinelle Routage">
+<meta property="og:title" content="BGP/RPKI Routing Security Audit + NIS2 Readiness — from EUR 490">
+<meta property="og:description" content="Your ASN reviewed in depth by a senior network engineer: RPKI, ROAs, visibility, hijack exposure. A PDF report ready for your NIS2 file. Delivered within 5 days, fully remote.">
+<meta property="og:url" content="https://sentinelle-routage.fr/en/audit-nis2.html">
+<meta property="og:image" content="https://sentinelle-routage.fr/og-image-en.png">
+<meta property="og:locale" content="en_US">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Routing Security Audit + NIS2 Readiness",
+  "serviceType": "BGP/RPKI routing security audit",
+  "provider": {"@type": "Organization", "name": "N&R Consulting", "url": "https://sentinelle-routage.fr/"},
+  "areaServed": "Europe",
+  "url": "https://sentinelle-routage.fr/en/audit-nis2.html",
+  "offers": [
+    {"@type": "Offer", "name": "Flash Routing Audit (1 ASN)", "price": "490", "priceCurrency": "EUR"},
+    {"@type": "Offer", "name": "Full Routing Audit", "price": "1490", "priceCurrency": "EUR"},
+    {"@type": "Offer", "name": "NIS2 Readiness Pack (up to 3 ASNs)", "price": "2990", "priceCurrency": "EUR"}
+  ]
+}
+</script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#111a2e; --panel2:#0e1626; --line:#1f2c47;
+    --txt:#e8eefb; --muted:#93a4c3; --acc:#4f8cff; --acc2:#7c5cff;
+    --ok:#2dd4a7; --warn:#f5b14c; --bad:#f4607a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  header{padding:18px 0;border-bottom:1px solid var(--line)}
+  .brand{font-weight:700;font-size:1.15rem;letter-spacing:.3px}
+  .brand a{color:var(--txt);text-decoration:none}
+  .brand span{color:var(--acc)}
+  .lang{float:right;color:var(--muted);font-size:.9rem;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px}
+  .lang:hover{color:var(--txt);border-color:var(--acc)}
+  .hero{padding:54px 0 10px;text-align:center}
+  .hero h1{font-size:clamp(1.5rem,3.6vw,2.3rem);line-height:1.22;margin-bottom:14px}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);max-width:680px;margin:0 auto 8px;font-size:1.03rem}
+  section{padding:34px 0}
+  section h2{text-align:center;font-size:1.45rem;margin-bottom:8px}
+  section .lead{text-align:center;color:var(--muted);max-width:660px;margin:0 auto 26px}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;align-items:stretch}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column}
+  .card h3{margin-bottom:8px;font-size:1.05rem}
+  .card p,.card li{color:var(--muted);font-size:.92rem}
+  .card ul{padding-left:18px;margin:8px 0 14px}
+  .card li{margin-bottom:6px}
+  .price{font-size:1.8rem;font-weight:800;margin:6px 0}
+  .price small{font-size:.85rem;color:var(--muted);font-weight:400}
+  .tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(124,92,255,.18);color:#b4a2ff;margin-bottom:10px}
+  .hl{border-color:var(--acc)}
+  .delay{font-size:.82rem;color:var(--muted);margin-bottom:12px}
+  .btn{display:inline-block;background:linear-gradient(90deg,var(--acc),var(--acc2));color:#fff;border:none;border-radius:9px;padding:12px 20px;font-size:.98rem;font-weight:600;text-decoration:none;text-align:center;margin-top:auto}
+  .btn.ghost{background:transparent;border:1px solid var(--acc);color:var(--acc)}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .step b{display:block;margin-bottom:6px}
+  .step p{color:var(--muted);font-size:.9rem}
+  .step .n{display:inline-flex;width:26px;height:26px;border-radius:50%;background:rgba(79,140,255,.15);color:var(--acc);align-items:center;justify-content:center;font-weight:700;margin-bottom:8px}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:16px 0}
+  .box.ok{border-color:rgba(45,212,167,.5);background:rgba(45,212,167,.06)}
+  .box p{color:var(--muted);font-size:.94rem}
+  .faq details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:10px}
+  .faq summary{cursor:pointer;font-weight:600}
+  .faq p{color:var(--muted);font-size:.92rem;margin-top:8px}
+  a{color:var(--acc)}
+  .note{font-size:.8rem;color:var(--muted);margin-top:10px;text-align:center}
+  .cta-final{margin:26px auto 10px;padding:24px;border:1px dashed var(--acc);border-radius:12px;background:rgba(79,140,255,.06);text-align:center;max-width:720px}
+  .cta-final p{color:var(--muted);margin-bottom:14px}
+  footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="lang" href="/audit-nis2.html" hreflang="fr">🇫🇷 FR</a><div class="brand"><a href="/en/">🛰️ Sentinelle <span>Routage</span></a></div></div></header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Routing security audit: <em>the report your auditor is asking for</em></h1>
+    <p>A senior network engineer reviews your AS's routing in depth: RPKI, ROAs, BGP visibility, IRR route objects, prefix-hijack exposure. You get a clear report your team and your security auditor can actually use.</p>
+    <p><b style="color:var(--txt)">One-shot, no subscription.</b> Fully remote and non-intrusive: public data only (RIS, RPKI, IRR), no access to your network required.</p>
+  </div>
+
+  <section>
+    <h2>Three packages, one actionable deliverable</h2>
+    <p class="lead">Prices excl. VAT. Pay online or by invoice (wire transfer). Performed by the engineer who built Sentinelle Routage.</p>
+    <div class="grid3">
+      <div class="card"><span class="tag">Flash Audit</span><div class="price">€490 <small>excl. VAT · 1 ASN</small></div>
+        <div class="delay">Delivered within 5 business days</div>
+        <ul>
+          <li>Full review of 1 ASN: RIS visibility, RPKI validation of <b>100% of announced prefixes</b> (v4+v6), BGP neighbours</li>
+          <li>Detection of overly permissive ROAs (maxLength, RFC 9319) and hijack exposure</li>
+          <li><b>PDF report</b> (5-8 pages): score, detailed findings, top 5 actions</li>
+        </ul>
+        <a class="btn" href="https://buy.stripe.com/3cI8wI9Me6EgcHe53R87K04" target="_blank" rel="noopener">Order — pay online</a>
+      </div>
+      <div class="card hl"><span class="tag">Full Audit</span><div class="price">€1,490 <small>excl. VAT · 1 ASN</small></div>
+        <div class="delay">Delivered within 10 business days</div>
+        <ul>
+          <li>Everything in Flash, plus: incident history (hijacks, leaks), IRR route-object review, PeeringDB consistency</li>
+          <li>Filtering recommendations (prefix-lists, RPKI ROV) and a <b>prioritised remediation plan</b></li>
+          <li><b>MANRS-readiness</b> gap analysis (the 4 actions)</li>
+          <li><b>1-hour video debrief</b> with your network team</li>
+        </ul>
+        <a class="btn" href="mailto:netrconsulting@gmail.com?subject=Full%20Routing%20Audit%20(EUR%201%2C490%20excl.%20VAT)">Request a quote by email</a>
+      </div>
+      <div class="card"><span class="tag">NIS2 Readiness Pack</span><div class="price">€2,990 <small>excl. VAT · up to 3 ASNs</small></div>
+        <div class="delay">Schedule agreed together (~2 weeks)</div>
+        <ul>
+          <li>Everything in the Full Audit, multi-ASN (up to 3)</li>
+          <li><b>"Evidence of diligence" file</b> formatted for your CISO or auditor: mapping to the relevant NIS2 Article 21 requirements</li>
+          <li>Routing-incident response procedure, ready to drop into your processes</li>
+          <li><b>3 months of Sentinelle Pro monitoring included</b> (24/7 alerts + monthly reports)</li>
+        </ul>
+        <a class="btn" href="mailto:netrconsulting@gmail.com?subject=NIS2%20Readiness%20Pack%20(EUR%202%2C990%20excl.%20VAT)">Request a quote by email</a>
+      </div>
+    </div>
+    <p class="note">📄 <a href="/rapport-exemple.pdf" target="_blank" rel="noopener">See a sample report (PDF, 6 pages)</a> — fictional network (RFC 5398/5737 resources), same structure as the reports we deliver.</p>
+  </section>
+
+  <section>
+    <h2>Why audit your routing now?</h2>
+    <div class="box">
+      <p><b style="color:var(--txt)">NIS2 asks for evidence, not intentions.</b> The NIS2 directive and implementing regulation 2024/2690 require essential and important entities in the digital-infrastructure sector to run <i>documented</i> risk-management measures. Prefix hijacks and expired ROAs are a very real risk (MyEtherWallet 2018, Verizon 2019, Celer 2022), and a dated, signed routing assessment is exactly the kind of artefact an auditor files. We say NIS2 <b style="color:var(--txt)">readiness</b> deliberately: the audit doesn't replace your compliance programme, it supplies its routing chapter — the one generalist security firms don't cover.</p>
+    </div>
+    <div class="box ok">
+      <p><b style="color:var(--txt)">Non-intrusive by design.</b> The audit relies exclusively on public sources: RIPE NCC RIS collectors, RPKI validation (local Routinator instance), IRR route objects (RADB), the RIPE database. Nothing to install, no access to your routers or IT systems, no clearance process on your side. You can order the audit without opening an access request with your IT department.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><b>Order</b><p>Pay online (Flash Audit) or quote + invoice (Full, NIS2 Pack). Just tell us your AS number(s).</p></div>
+      <div class="step"><span class="n">2</span><b>Analysis</b><p>100% of your announced prefixes reviewed: RPKI, ROAs, maxLength, IRR, visibility, BGP neighbourhood, history depending on the package.</p></div>
+      <div class="step"><span class="n">3</span><b>Report</b><p>A dated, argued PDF: score, findings, prioritised action plan. Within 5 business days for Flash, 10 for Full.</p></div>
+      <div class="step"><span class="n">4</span><b>Afterwards</b><p>Video debrief (Full and Pack). If you want it to stay clean: <a href="/en/#tarifs">continuous monitoring</a> takes over.</p></div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <h2>Frequently asked questions</h2><br>
+    <details><summary>Who performs the audit?</summary><p>The network engineer who built Sentinelle Routage: 18 years on critical networks, MPLS backbone (Juniper, Cisco, Nokia). The public checker has already analysed 450+ ASNs, and the methodology was covered in a <a href="https://www.bortzmeyer.org/sentinelle-routage.html" target="_blank" rel="noopener">blog post by Stéphane Bortzmeyer</a> (AFNIC).</p></details>
+    <details><summary>Is this a NIS2 compliance audit?</summary><p>No — and be wary of anyone selling you one while national transpositions are still settling. This is a technical audit of the routing chapter, formatted to feed your NIS2 readiness file (with an Article 21 mapping in the Pack). It complements an organisational audit; it doesn't replace it.</p></details>
+    <details><summary>Do you need access to our network?</summary><p>No. Everything is done from public data (RIS, RPKI, IRR, RIPE DB). That's what makes the audit fast and risk-free for you: nothing to install, nothing to open up.</p></details>
+    <details><summary>What if our routing is already clean?</summary><p>Great: the report documents it in black and white, with a date and a method. That's precisely what an auditor or an enterprise customer will ask you to prove. And if we find blind spots (permissive ROAs, prefixes without IRR objects, partial visibility), you leave with the plan to fix them.</p></details>
+    <details><summary>How does invoicing work?</summary><p>N&R Consulting (French company) issues a proper invoice for every order, online payments included. Prices are excl. VAT. For the Full Audit and NIS2 Pack: quote within 48 h, work starts at signature.</p></details>
+  </section>
+
+  <div class="cta-final">
+    <p><b style="color:var(--txt)">Not sure which package fits?</b><br>Describe your situation in two lines (ASN, audit deadline, team size) and you'll get an engineer's answer, not a sales funnel.</p>
+    <a class="btn" href="mailto:netrconsulting@gmail.com?subject=Routing%20audit%20%2F%20NIS2%20%E2%80%94%20question">Email the engineer</a>
+    <a class="btn ghost" style="margin-left:8px" href="/en/#checker">Check my ASN for free first</a>
+  </div>
+</div>
+
+<footer>© 2026 N&R Consulting — Sentinelle Routage · <a href="/en/">Home</a> · <a href="https://sentinelle-backend-production.up.railway.app/status" target="_blank" rel="noopener">Service status (real time)</a><div style="margin-top:10px;font-size:.78rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5">Routing data: <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/" style="color:var(--muted);text-decoration:underline">RIPE NCC Routing Information Service (RIS)</a> and <a href="https://ris-live.ripe.net/" style="color:var(--muted);text-decoration:underline">RIS Live</a> · RPKI validation: local <a href="https://nlnetlabs.nl/projects/routing/routinator/" style="color:var(--muted);text-decoration:underline">Routinator</a> instance.<br>This product includes data from the RIPE NCC Routing Information Service (RIS), © RIPE NCC, used in accordance with the RIPE NCC terms and conditions.</div></footer>
+</body>
+</html>
