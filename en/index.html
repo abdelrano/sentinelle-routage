@@ -481,6 +481,11 @@ function renderResult(m, ageMin){
       </ul>
       <button onclick="payIntent('${m.asn}')">💶 Monitor AS${m.asn} continuously — €39/month, first month free</button>
       <button onclick="document.getElementById('waitlist-section').scrollIntoView({behavior:'smooth'});document.getElementById('wl-asn').value='AS${m.asn}'" style="background:transparent;border:1px solid var(--acc);color:var(--acc);margin-left:8px">Just keep me posted</button>
+      <div class="row" style="margin-top:12px">
+        <input type="email" id="rptEmail" aria-label="Email" placeholder="email@your-noc.com" onkeydown="if(event.key==='Enter')submitReportEmail('${m.asn}','${m.grade}')">
+        <button onclick="submitReportEmail('${m.asn}','${m.grade}')" style="background:transparent;border:1px solid var(--acc);color:var(--acc)">📧 Get this analysis by email</button>
+      </div>
+      <div class="note" style="text-align:left">The prefix-by-prefix detail, sent by the engineer (not a robot) within 1 business day, + a free re-analysis in 30 days. No spam.</div>
       <div style="margin-top:12px;font-size:.88rem;color:var(--muted)">Founding program full (5 pilot networks). <a href="#tarifs" style="color:var(--acc)">Start with the first month free</a> — no commitment.</div>
     </div>`;
 }
@@ -542,6 +547,21 @@ function submitPayLead(asn){
   fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
   const box = document.getElementById("ctaBox");
   if(box) box.innerHTML = "<p>✅ <b>Perfect, noted.</b> You'll be contacted first (launch offer: first month free). Thanks for moving the project forward.</p>";
+}
+
+// "Report requested" email capture: the visitor leaves an email to receive the
+// detail of THEIR analysis. Row tagged "— RAPPORT DEMANDÉ" (with the grade) in the
+// sheet: hot lead, handled manually within 1 business day.
+function submitReportEmail(asn, grade){
+  const pe = document.getElementById("rptEmail");
+  const email = pe ? pe.value.trim() : "";
+  if(!email || email.indexOf("@") < 1){ if(pe){ pe.focus(); pe.style.borderColor = "var(--bad)"; } return; }
+  const fd = new FormData();
+  fd.append(ENTRY_EMAIL, email);
+  fd.append(ENTRY_ASN, "AS" + asn + (grade ? "|" + grade : "") + " — RAPPORT DEMANDÉ");
+  fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  const row = pe.closest(".row");
+  if(row){ row.outerHTML = "<p style='margin-top:12px'>✅ <b>Noted.</b> You'll receive the detailed analysis of AS" + asn + " by email within 1 business day.</p>"; }
 }
 
 // One "visit" line per browsing session, tagged "EN" in the ASN column so
