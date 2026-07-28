@@ -253,6 +253,7 @@ const CACHE_TTL_MS = 60 * 60 * 1000; // 1 h : durée de validité du résultat m
 const ANALYTICS_EMAIL = "analyse@sentinelle-routage.invalid";
 const VISIT_EMAIL = "visite@sentinelle-routage.invalid";
 const PAY_EMAIL = "paiement@sentinelle-routage.invalid";
+const AUDIT_EMAIL = "audit@sentinelle-routage.invalid";
 
 const $ = id => document.getElementById(id);
 
@@ -463,6 +464,14 @@ function renderResult(m, ageMin){
     ? `<p><b>Votre routage est propre, aujourd'hui.</b> Le jour où un de vos préfixes est détourné ou qu'un ROA expire, <b>rien ne sonne</b> de votre côté : vous l'apprenez par vos clients, ou par votre auditeur. RIPEstat vous le montrerait… si vous pensiez à le regarder au bon moment, à 3 h du matin. La surveillance, c'est regarder pour vous, en continu :</p>`
     : `<p><b>Vous avez déjà des angles morts ci-dessus, et personne ne vous préviendra quand ça empire</b>, ni quand quelqu'un en profite. Une photo ponctuelle ne dit rien de demain. Voici ce que comble la surveillance payante :</p>`;
 
+  // Note C/D/E : l'audit one-shot devient l'offre principale (plan de correction), la surveillance passe en second.
+  const auditCta = clean ? "" : `
+    <div class="cta-box" id="auditBox" style="border:1px solid var(--acc);margin-bottom:14px">
+      <p><b>Note ${m.grade} : ces angles morts méritent un plan de correction, pas juste une photo.</b> L'<b>Audit Flash</b> passe AS${m.asn} au crible : analyse RPKI/ROA préfixe par préfixe, alignement IRR, visibilité, plan d'action priorisé et lecture NIS2/MANRS — <b>rapport PDF sous 48 h</b>, 100 % à distance, facture automatique.</p>
+      <button onclick="auditIntent('${m.asn}','${m.grade}')">🔍 Commander l'Audit Flash d'AS${m.asn} — 490 € HT</button>
+      <div style="margin-top:10px;font-size:.88rem;color:var(--muted)"><a href="/audit-nis2.html" style="color:var(--acc)">Voir les 3 formules d'audit (Flash 490 € · Complet 1 490 € · Pack NIS2 2 990 €) →</a></div>
+    </div>`;
+
   res.innerHTML = `
     ${cachedNote}
     <div class="scorecard">
@@ -480,6 +489,7 @@ function renderResult(m, ageMin){
       <div class="kpi"><b>${m.irrCovered}/${m.totalPrefixes}</b><span>préfixes avec objet route IRR</span></div>
     </div>
     <div class="issues">${sampleNote}${errorNote}${issuesHtml}</div>
+    ${auditCta}
     <div class="cta-box" id="ctaBox">
       ${ctaLead}
       <ul style="margin:0 0 12px 18px;color:var(--muted);font-size:.92rem">
@@ -534,6 +544,17 @@ function logPayIntent(asn){
   }catch(e){ /* no-op */ }
 }
 // Au clic : logue l'intention immédiatement, puis demande l'email en place.
+// Au clic audit : logue l'intention (marqueur audit@ + note) puis ouvre le paiement Audit Flash (one-shot, TVA + facture auto).
+function auditIntent(asn, grade){
+  try{
+    const fd = new FormData();
+    fd.append(ENTRY_EMAIL, AUDIT_EMAIL);
+    fd.append(ENTRY_ASN, "AS" + asn + (grade ? "|" + grade : "") + " — CLIC AUDIT");
+    fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  }catch(e){ /* no-op */ }
+  try{ window.open("https://buy.stripe.com/3cI8wI9Me6EgcHe53R87K04", "_blank", "noopener"); }catch(e){}
+}
+
 function payIntent(asn){
   logPayIntent(asn); try{ window.open("https://buy.stripe.com/dRm14gf6y2o036Ebsf87K03", "_blank", "noopener"); }catch(e){}
   const box = document.getElementById("ctaBox");
