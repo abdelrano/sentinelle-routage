@@ -254,6 +254,7 @@ const CACHE_TTL_MS = 60 * 60 * 1000; // 1 h cache per ASN
 const ANALYTICS_EMAIL = "analyse@sentinelle-routage.invalid";
 const VISIT_EMAIL = "visite@sentinelle-routage.invalid";
 const PAY_EMAIL = "paiement@sentinelle-routage.invalid";
+const AUDIT_EMAIL = "audit@sentinelle-routage.invalid";
 
 const $ = id => document.getElementById(id);
 
@@ -454,6 +455,14 @@ function renderResult(m, ageMin){
     ? `<p><b>Your routing is clean — today.</b> The day one of your prefixes gets hijacked or a ROA expires, <b>nothing rings</b> on your side: you learn it from your customers, or from your auditor. RIPEstat would show it to you… if you happened to be looking at the right moment, at 3 a.m. Monitoring is having someone look for you, continuously:</p>`
     : `<p><b>You already have blind spots above — and nobody will warn you when they get worse</b>, or when someone exploits them. A one-off snapshot says nothing about tomorrow. Here's what paid monitoring adds:</p>`;
 
+  // Grade C/D/E: the one-shot audit becomes the primary offer (remediation plan), monitoring goes second.
+  const auditCta = clean ? "" : `
+    <div class="cta-box" id="auditBox" style="border:1px solid var(--acc);margin-bottom:14px">
+      <p><b>Grade ${m.grade}: these blind spots deserve a remediation plan, not just a snapshot.</b> The <b>Flash Audit</b> puts AS${m.asn} under the microscope: prefix-by-prefix RPKI/ROA analysis, IRR alignment, visibility, a prioritized action plan and a NIS2/MANRS reading — <b>PDF report within 48 hours</b>, fully remote, automatic invoice.</p>
+      <button onclick="auditIntent('${m.asn}','${m.grade}')">🔍 Order the Flash Audit of AS${m.asn} — €490 excl. VAT</button>
+      <div style="margin-top:10px;font-size:.88rem;color:var(--muted)"><a href="/en/audit-nis2.html" style="color:var(--acc)">See all 3 audit packages (Flash €490 · Full €1,490 · NIS2 Pack €2,990) →</a></div>
+    </div>`;
+
   res.innerHTML = `
     ${cachedNote}
     <div class="scorecard">
@@ -471,6 +480,7 @@ function renderResult(m, ageMin){
       <div class="kpi"><b>${m.irrCovered}/${m.totalPrefixes}</b><span>prefixes with an IRR route object</span></div>
     </div>
     <div class="issues">${sampleNote}${errorNote}${issuesHtml}</div>
+    ${auditCta}
     <div class="cta-box" id="ctaBox">
       ${ctaLead}
       <ul style="margin:0 0 12px 18px;color:var(--muted);font-size:.92rem">
@@ -522,6 +532,17 @@ function logPayIntent(asn){
     fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
   }catch(e){ /* no-op */ }
 }
+// Audit click: log the intent (audit@ marker + grade) then open the Flash Audit checkout (one-shot, VAT + auto invoice).
+function auditIntent(asn, grade){
+  try{
+    const fd = new FormData();
+    fd.append(ENTRY_EMAIL, AUDIT_EMAIL);
+    fd.append(ENTRY_ASN, "AS" + asn + (grade ? "|" + grade : "") + " — CLIC AUDIT");
+    fetch(GFORM_ACTION, {method:"POST", mode:"no-cors", body:fd});
+  }catch(e){ /* no-op */ }
+  try{ window.open("https://buy.stripe.com/3cI8wI9Me6EgcHe53R87K04", "_blank", "noopener"); }catch(e){}
+}
+
 function payIntent(asn){
   logPayIntent(asn); try{ window.open("https://buy.stripe.com/dRm14gf6y2o036Ebsf87K03", "_blank", "noopener"); }catch(e){}
   const box = document.getElementById("ctaBox");
