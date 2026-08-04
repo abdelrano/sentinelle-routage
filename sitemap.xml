@@ -20,6 +20,24 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sentinelle-routage.fr/en/"/>
   </url>
   <url>
+    <loc>https://sentinelle-routage.fr/barometre/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://sentinelle-routage.fr/barometre/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sentinelle-routage.fr/en/barometre/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sentinelle-routage.fr/en/barometre/"/>
+  </url>
+  <url>
+    <loc>https://sentinelle-routage.fr/en/barometre/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://sentinelle-routage.fr/barometre/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sentinelle-routage.fr/en/barometre/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sentinelle-routage.fr/en/barometre/"/>
+  </url>
+  <url>
     <loc>https://sentinelle-routage.fr/audit-nis2.html</loc>
     <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>

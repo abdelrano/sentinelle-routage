@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baromètre RPKI août 2026 : 1 réseau sur 5 en zone à risque | Sentinelle Routage</title>
+<meta name="description" content="166 AS évalués par le checker public Sentinelle Routage : 52 % de notes A, mais 20,5 % en zone à risque (C/D/E) et 24 AS quasi sans protection RPKI. Collectivités, cloud souverain, hébergeurs santé : les mal protégés ne sont pas ceux qu'on croit.">
+<link rel="canonical" href="https://sentinelle-routage.fr/barometre/">
+<link rel="alternate" hreflang="fr" href="https://sentinelle-routage.fr/barometre/">
+<link rel="alternate" hreflang="en" href="https://sentinelle-routage.fr/en/barometre/">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230b1220' stroke='%234f8cff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%234f8cff' stroke-width='1.5' opacity='.6'/%3E%3Ccircle cx='20' cy='12' r='3' fill='%232dd4a7'/%3E%3C/svg%3E">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Sentinelle Routage">
+<meta property="og:title" content="Baromètre RPKI août 2026 : 1 réseau sur 5 en zone à risque">
+<meta property="og:description" content="166 AS évalués : 52 % de notes A, 20,5 % en zone à risque. Les mal protégés ne sont pas les grands FAI : collectivités, cloud souverain, hébergeurs santé.">
+<meta property="og:url" content="https://sentinelle-routage.fr/barometre/">
+<meta property="og:image" content="https://sentinelle-routage.fr/og-image.png">
+<meta property="og:locale" content="fr_FR">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Baromètre RPKI août 2026 : 1 réseau sur 5 en zone à risque",
+  "inLanguage": "fr",
+  "datePublished": "2026-08-05",
+  "author": {"@type": "Organization", "name": "Sentinelle Routage (N&R Consulting)"},
+  "publisher": {"@type": "Organization", "name": "N&R Consulting"},
+  "mainEntityOfPage": "https://sentinelle-routage.fr/barometre/",
+  "about": ["RPKI", "BGP", "ROA", "NIS 2", "sécurité du routage"]
+}
+</script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#111a2e; --panel2:#0e1626; --line:#1f2c47;
+    --txt:#e8eefb; --muted:#93a4c3; --acc:#4f8cff; --acc2:#7c5cff;
+    --ok:#2dd4a7; --warn:#f5b14c; --bad:#f4607a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+  .wrap{max-width:820px;margin:0 auto;padding:0 20px}
+  header{padding:18px 0;border-bottom:1px solid var(--line)}
+  .brand{font-weight:700;font-size:1.15rem;letter-spacing:.3px}
+  .brand a{color:var(--txt);text-decoration:none}
+  .brand span{color:var(--acc)}
+  article{padding:44px 0}
+  h1{font-size:clamp(1.5rem,3.5vw,2.2rem);line-height:1.25;margin-bottom:14px}
+  h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);font-size:1.05rem;margin-bottom:28px}
+  h2{font-size:1.3rem;margin:34px 0 10px}
+  p,li{color:var(--muted);font-size:.97rem;margin-bottom:12px}
+  ul,ol{padding-left:22px;margin-bottom:12px}
+  strong{color:var(--txt)}
+  a{color:var(--acc)}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:20px 0}
+  .box.warn{border-color:rgba(245,177,76,.5);background:rgba(245,177,76,.06)}
+  .cta-box{margin:30px 0;padding:22px;border:1px dashed var(--acc);border-radius:10px;background:rgba(79,140,255,.06);text-align:center}
+  .cta-box p{margin-bottom:14px}
+  .btn{display:inline-block;background:linear-gradient(90deg,var(--acc),var(--acc2));color:#fff;border:none;border-radius:9px;padding:12px 22px;font-size:1rem;font-weight:600;text-decoration:none}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;color:var(--muted)}
+  th{color:var(--txt);background:var(--panel2)}
+  .bar{height:12px;border-radius:6px;min-width:4px}
+  .gA{background:var(--ok)} .gB{background:#7fd6bd} .gC{background:var(--warn)} .gD{background:var(--bad)} .gE{background:#b91c3c}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:22px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .kpi .n{font-size:1.6rem;font-weight:700;color:var(--txt)}
+  .kpi .l{font-size:.82rem;color:var(--muted)}
+  footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand"><a href="/">Sentinelle <span>Routage</span></a></div></div></header>
+
+<article class="wrap">
+<h1>Baromètre RPKI, août 2026 : <em>1 réseau sur 5 en zone à risque</em></h1>
+<p class="lead">Sur 166 réseaux (AS) évalués par notre checker public entre le 21 juillet et le 4 août 2026, un sur cinq obtient une note C, D ou E, et 24 n'ont pratiquement aucune protection RPKI : leurs préfixes peuvent être usurpés (hijack d'origine) sans qu'aucun opérateur ne puisse les protéger. Et les mal protégés ne sont pas ceux qu'on croit.</p>
+
+<div class="kpis">
+<div class="kpi"><div class="n">570</div><div class="l">AS analysés depuis juin</div></div>
+<div class="kpi"><div class="n">166</div><div class="l">AS notés (A-E)</div></div>
+<div class="kpi"><div class="n">20,5 %</div><div class="l">en zone à risque (C/D/E)</div></div>
+<div class="kpi"><div class="n">24</div><div class="l">AS quasi sans protection (D/E)</div></div>
+</div>
+
+<h2>La distribution des notes</h2>
+<table>
+<tr><th>Note</th><th>AS</th><th>Part</th><th></th></tr>
+<tr><td><strong>A</strong> — routage exemplaire, ROA complets</td><td>86</td><td>52 %</td><td style="width:30%"><div class="bar gA" style="width:100%"></div></td></tr>
+<tr><td><strong>B</strong> — protection large, quelques écarts</td><td>46</td><td>28 %</td><td><div class="bar gB" style="width:54%"></div></td></tr>
+<tr><td><strong>C</strong> — écarts significatifs</td><td>10</td><td>6 %</td><td><div class="bar gC" style="width:12%"></div></td></tr>
+<tr><td><strong>D</strong> — majorité des préfixes sans ROA</td><td>23</td><td>14 %</td><td><div class="bar gD" style="width:27%"></div></td></tr>
+<tr><td><strong>E</strong> — aucune protection</td><td>1</td><td>0,6 %</td><td><div class="bar gE" style="width:4%"></div></td></tr>
+</table>
+
+<h2>Qui est en zone à risque ?</h2>
+<p>Pas les grands FAI grand public : parmi les mieux notés de l'échantillon figurent <strong>Free (A)</strong>, <strong>Orange (B)</strong>, <strong>SFR (B)</strong> ou <strong>Swisscom (B)</strong>. Les 24 AS en D/E, que nous avons qualifiés un par un, relèvent de catégories qu'on n'attend pas là :</p>
+<ul>
+<li>une <strong>grande collectivité territoriale française</strong></li>
+<li>un <strong>acteur du cloud « souverain » français</strong></li>
+<li>un <strong>hébergeur certifié pour les données de santé</strong></li>
+<li>un <strong>éditeur de logiciels du secteur santé</strong></li>
+<li>plusieurs <strong>opérateurs B2B et hébergeurs français</strong></li>
+<li>des <strong>AS historiques de transitaires mondiaux</strong> et des <strong>groupes industriels internationaux</strong></li>
+</ul>
+<div class="box warn">
+<p><strong>Autrement dit :</strong> les entités mêmes que NIS 2 qualifie d'essentielles ou d'importantes, et dont les clients supposent que l'infrastructure est protégée. Nous ne nommons pas ici les organisations concernées ; chacune peut vérifier sa propre situation en 30 secondes ci-dessous.</p>
+</div>
+
+<h2>Pourquoi c'est un vrai risque</h2>
+<p>Sans ROA RPKI, rien n'atteste quel AS a le droit d'annoncer un préfixe. Un hijack d'origine, accidentel ou malveillant, est alors accepté par la plupart des réseaux, y compris par les opérateurs qui valident RPKI : ils ne peuvent rejeter que ce qui est déclaré. Conséquences observées ces dernières années : détournement de trafic, interception, indisponibilité, usurpation d'adresses pour du spam ou du phishing.</p>
+<p>La correction est pourtant rapide : les ROA se créent dans le portail du RIR (RIPE NCC pour l'Europe), sans changement d'infrastructure. Voir aussi notre guide sur <a href="/roa-maxlength.html">les ROA trop permissifs (RFC 9319)</a>.</p>
+
+<div class="cta-box">
+<p><strong>Où en est votre AS ?</strong><br>Analyse gratuite, sans inscription, note A-E et détail préfixe par préfixe en 30 secondes.</p>
+<a class="btn" href="/#checker">Analyser mon ASN</a>
+</div>
+
+<h2>Méthodologie et limites</h2>
+<p>Notes calculées par le checker public sentinelle-routage.fr à partir de données publiques uniquement : table de routage vue par les collecteurs RIS (RIPE NCC, avec attribution), état RPKI des préfixes annoncés, objets route IRR. Barème : part de préfixes couverts par un ROA valide, préfixes RPKI-invalid, ROA trop permissifs (maxLength), couverture IRR.</p>
+<p><strong>Limites assumées :</strong> échantillon auto-sélectionné (AS analysés par les visiteurs du checker, avec un biais vers les communautés d'opérateurs françaises, allemandes et suisses d'où vient notre trafic), instantané au jour de l'analyse. Ce baromètre décrit l'échantillon, pas l'exhaustivité du parc. Chiffres d'activité : 570 AS distincts analysés et 989 analyses depuis le 13 juin ; la notation A-E existe depuis le 21 juillet.</p>
+
+<div class="cta-box">
+<p><strong>Votre AS est mal noté ?</strong> Audit one-shot avec plan de correction complet, rapport sous 48 h, 100 % asynchrone, à partir de 490 € HT.</p>
+<a class="btn" href="/audit-nis2.html">Découvrir les audits</a>
+</div>
+</article>
+
+<footer>© 2026 N&R Consulting — Sentinelle Routage · <a href="/">Accueil</a> · <a href="/en/barometre/">English version</a><div style="margin-top:10px;font-size:.78rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5">Données de routage : <a href="https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/" style="color:var(--muted);text-decoration:underline">RIPE NCC Routing Information Service (RIS)</a> · Validation RPKI : instance <a href="https://nlnetlabs.nl/projects/routing/routinator/" style="color:var(--muted);text-decoration:underline">Routinator</a> locale.<br>This product includes data from the RIPE NCC Routing Information Service (RIS), © RIPE NCC, used in accordance with the RIPE NCC terms and conditions.</div></footer>
+</body>
+</html>
